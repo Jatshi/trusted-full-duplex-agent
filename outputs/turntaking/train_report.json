@@ -1,0 +1,30 @@
+{
+  "n_utterances": {
+    "train": 500,
+    "val": 150
+  },
+  "n_frames": {
+    "train": 18190,
+    "val": 5572
+  },
+  "label_dist": {
+    "hold": 13446,
+    "take": 4228,
+    "backchannel": 516
+  },
+  "frame_acc": {
+    "train": 0.9635,
+    "val": 0.9646
+  },
+  "val_recall_per_class": {
+    "hold": 0.965,
+    "take": 0.979,
+    "backchannel": 0.826
+  },
+  "loss": {
+    "first": 1.2488,
+    "last": 0.0944
+  },
+  "ckpt": "outputs\\turntaking\\learned_mlp.pt",
+  "seed": 42
+}

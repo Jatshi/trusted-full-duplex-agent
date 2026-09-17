@@ -1,0 +1,39 @@
+# 流式可信护栏配置 —— Direction A 差异化层
+decisions:
+  top_k: 3                 # 期望动作类数量（execute / clarify / stop）
+
+thresholds:
+  # 决策分数 = risk * (1 - confidence)；低于 execute_thr -> execute
+  execute_thr: 0.30        # 高于此值就不直接执行
+  clarify_thr: 0.60        # 在 execute_thr 与 clarify_thr 之间 -> 澄清/复述
+                           # 高于 clarify_thr -> 停止/拒答
+  # 绝对置信度兜底：单条意图置信低于此值，即使 risk 低也强制澄清
+  min_confidence: 0.55
+
+risk:
+  # 预定义高危意图关键词 -> 提升 risk 权重
+  high_risk_intents:
+    irreversibles: ["转账", "支付", "下单", "预约", "删除", "删", "锁定", "授权"]
+    physical_acts: ["加速", "制动", "急刹", "泊车", "变道", "开门", "限速"]
+  # 不可逆类 bonus 必须落在 risk_confirm_floor 之上（见 features.py 注释：
+  # 旧值 0.3 时清晰语音的删除/转账指令会绕过二次确认直接 execute）
+  irreversible_bonus: 0.40
+  physical_bonus: 0.50
+  # 风险达到此阈值 => 绝不直接执行，至少要"二次确认"(CLARIFY/STOP)
+  risk_confirm_floor: 0.4
+
+features:
+  # 从哪里取 confidence/uncertainty（见 gate/features.py）
+  confidence_source: "model_logprob"   # model_logprob | asr_confidence | both_avg
+  use_uncertainty: true
+  appraisal_window_s: 1.5
+
+streaming:
+  # 门控是否流式（按 chunk 决策）还是整句（句末决策）
+  stream_mode: true
+  # 流式下每 chunk 检查，满足"确认阈值"才落定动作
+  confirm_required: true
+  confirm_ratio: 0.7      # 连续 chunks 中 ≥70% 同动作才落定，避免抖动
+
+ablation:
+  variants: ["full", "no_gate", "confidence_only", "risk_only"]

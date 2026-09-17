@@ -1,0 +1,75 @@
+# ============================================================
+# base 核心配置 —— 全双工基座选择与加载
+# 改这里即可切换基座，后端代码统一通过本配置读取
+# ============================================================
+
+# 基座：可选 "minicpm_o"（推荐） | "nemotron_voicechat" | "moshi"
+backend: "minicpm_o"
+
+paths:
+  # 数据盘持久化目录（AutoDL 上把权重放这里，关机不扣实例费）
+  weights_dir: "weights/"
+  data_dir: "data/"
+  output_dir: "outputs/"
+
+model:
+  # MiniCPM-o 4.5
+  minicpm_o:
+    repo_or_path: "openbmb/MiniCPM-o-4_5"
+    dtype: "bf16"               # 24GB 卡推荐 bf16；16GB 卡改 int8
+    # 是否从头加载本地权重（从 weights/ 目录加载，避免每次下载）
+    load_from_local: false
+    device_map: "auto"
+
+  # NVIDIA VoiceChat 11B（无视觉，纯 speech-to-speech，16GB 也能 int8 跑）
+  nemotron_voicechat:
+    repo_or_path: "nvidia/voicechat-11b"
+    dtype: "int8"
+    load_from_local: false
+
+  # Moshi / PersonaPlex（研究用，turn-taking 分析）
+  moshi:
+    repo_or_path: "kyutai/moshiko-bfloat16"
+    dtype: "bf16"
+    load_from_local: false
+
+duplex:
+  # 全双工流式执行方式：
+  #   "streaming_generate" : 直接调用 model.streaming_generate，边输入边产出（最简单，P0/P1 用）
+  #   "duplex_server"      : 连官方 wss 全双工服务（真·边听边说+自主listen/speak+可打断，P2+用）
+  stream_style: "streaming_generate"
+  # 流式 chunk 时长（秒），越小越实时、开销越高
+  chunk_seconds: 0.5
+  # listen 与 speak 两个流之间允许的并行度
+  max_parallel_streams: 2
+  # 首 token 延迟预算（秒），超预算触发快路径
+  first_token_budget_s: 0.8
+  # 打断检测阈值（overlap 秒数，超过判定为"用户抢话"）
+  barge_in_overlap_s: 0.15
+
+  # --- streaming_generate 直连参数（对应 MiniCPM-o 官方接口） ---
+  streaming_generate:
+    session_id_prefix: "tfd_"
+    generate_audio: true
+    use_tts_template: true
+    enable_thinking: false
+    do_sample: true
+    max_new_tokens: 512
+    length_penalty: 1.1      # 实时语音对话官方建议 1.1
+
+  # --- duplex_server（官方 wss 全双工服务）---
+  duplex_server:
+    ws_url: "wss://127.0.0.1:8006/ws/duplex/{session_id}"   # 你起的官方 duplex 服务地址
+    session_prefix: "adx_"     # "adx_"=仅音频;  "omni_"=音频+摄像头
+    chunk_ms: 1000             # 服务端每个推理步的时间片（需与发送节奏一致）
+    force_listen_count: 3      # 开场强制聆听保护步数
+    max_new_speak_tokens_per_chunk: 20
+    listen_prob_scale: 1.0
+    ls_mode: "explicit"
+    temperature: 0.7
+    top_p: 0.8
+    top_k: 20
+    ref_audio_path: ""         # 选填：参考音频路径做音色克隆/角色扮演
+
+logging:
+  level: "INFO"

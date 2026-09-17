@@ -1,0 +1,33 @@
+# 核心运行时（按所选基座增减，见 README）
+torch>=2.2
+transformers>=4.44
+numpy>=1.24
+soundfile>=0.12
+librosa>=0.9
+
+# 全双工 / 语音相关
+sentencepiece>=0.2
+protobuf>=4.25
+accelerate>=0.30
+peft>=0.12
+
+# 可视化 / 演示 / 记录
+matplotlib>=3.8
+pydub>=0.25
+
+# 可测性 & 工程
+pyyaml>=6.0
+pandas>=2.0
+tqdm>=4.66
+pytest>=8.0
+
+# ---------- 按基座选择性安装 ----------
+# MiniCPM-o 4.5（推荐）：见 openbmb/MiniCPM-o-4_5 官方 requirements
+# Minicpmo 官方依赖示例（按实际仓库替换版本号）
+# git+https://github.com/OpenBMB/MiniCPM-o.git
+# cosyvoice2 / qwen_omni 依赖，由官方 setup 自带
+
+# NVIDIA VoiceChat 11B（备选）：见 nvidia/nemotronlabs voicechat 官方 requirements
+# ---------- 仅训练时用到 ----------
+# trl
+# deepspeed

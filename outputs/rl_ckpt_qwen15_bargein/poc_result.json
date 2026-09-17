@@ -1,0 +1,17 @@
+{
+  "model": "/root/autodl-tmp/trusted-full-duplex-agent/weights/qwen2.5-1.5b-instruct",
+  "steps": 20,
+  "data": "bargein_context.jsonl",
+  "pre_reward": 0.41607916685193413,
+  "post_reward": 0.5723478981290129,
+  "delta": 0.15626873127707874,
+  "pre_family": {
+    "barge_in_context": 0.41607916685193413
+  },
+  "post_family": {
+    "barge_in_context": 0.5723478981290129
+  },
+  "pre_context_recall": 0.3006755853784619,
+  "post_context_recall": 0.48426026799206817,
+  "signal_steps": 20
+}

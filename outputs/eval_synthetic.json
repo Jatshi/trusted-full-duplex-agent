@@ -1,0 +1,7 @@
+{
+  "first_token_latency_s": 0.41999999999999993,
+  "barge_in_latency_s": 0.17999999999999972,
+  "misuse_rate": 0.125,
+  "duplex_simultaneity": 0.35555555555555557,
+  "content_bleu": 0.6153846153846154
+}

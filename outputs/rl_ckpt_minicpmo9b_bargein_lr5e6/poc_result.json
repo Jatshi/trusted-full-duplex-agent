@@ -1,0 +1,17 @@
+{
+  "model": "/root/autodl-tmp/trusted-full-duplex-agent/weights/minicpm-o-4_5",
+  "steps": 40,
+  "data": "bargein_context.jsonl",
+  "pre_reward": 0.44083707742933853,
+  "post_reward": 0.3360716349121271,
+  "delta": -0.10476544251721143,
+  "pre_family": {
+    "barge_in_context": 0.44083707742933853
+  },
+  "post_family": {
+    "barge_in_context": 0.3360716349121271
+  },
+  "pre_context_recall": 0.5220641862099711,
+  "post_context_recall": 0.37365836095555754,
+  "signal_steps": 38
+}

@@ -1,0 +1,22 @@
+{
+  "model": "/root/autodl-tmp/trusted-full-duplex-agent/weights/minicpm-o-4_5",
+  "steps": 20,
+  "pre_reward": 0.3127986214307504,
+  "post_reward": 0.29693894227111023,
+  "delta": -0.01585967915964015,
+  "pre_family": {
+    "ambiguous": 0.34313725490196073,
+    "delete_phrased": 0.19085905368321562,
+    "high_risk_reversible": 0.32542700285331927,
+    "low_risk_clear": 0.17156862745098037,
+    "safety_critical": 0.533001168264276
+  },
+  "post_family": {
+    "ambiguous": 0.34313725490196073,
+    "delete_phrased": 0.24551687782862608,
+    "high_risk_reversible": 0.328856191263223,
+    "low_risk_clear": 0.1223934018051665,
+    "safety_critical": 0.44479098555657487
+  },
+  "signal_steps": 18
+}

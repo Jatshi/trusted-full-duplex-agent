@@ -1,0 +1,25 @@
+{
+  "model": "weights/qwen2.5-1.5b-instruct",
+  "steps": 20,
+  "data": "rl_streams.jsonl",
+  "pre_reward": 0.11438785079023783,
+  "post_reward": 0.18302131576476377,
+  "delta": 0.06863346497452594,
+  "pre_family": {
+    "ambiguous": 0.2058823529411765,
+    "delete_phrased": 0.0,
+    "high_risk_reversible": 0.12379196692922183,
+    "low_risk_clear": 0.13932375761020263,
+    "safety_critical": 0.10294117647058824
+  },
+  "post_family": {
+    "ambiguous": 0.034313725490196074,
+    "delete_phrased": 0.08595761536938007,
+    "high_risk_reversible": 0.335771023784939,
+    "low_risk_clear": 0.29838883291568713,
+    "safety_critical": 0.16067538126361655
+  },
+  "pre_context_recall": null,
+  "post_context_recall": null,
+  "signal_steps": 15
+}

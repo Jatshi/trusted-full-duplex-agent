@@ -1,0 +1,33 @@
+# ============================================================
+# MiniCPM-o 4.5 官方运行时（AutoDL 在线跑基座用）
+# 版本按 openbmb/MiniCPM-o-4_5 官方文档锁定，勿随意升级：
+#   streaming_prefill / streaming_generate / init_tts 都是 remote code，
+#   依赖特定版本，装错了接口直接对不上。
+#
+# 安装：pip install -r requirements_minicpmo.txt
+# ============================================================
+
+# 官方锁死版本（重点）
+transformers==4.51.0
+minicpmo-utils[all]>=1.0.5
+
+# torch 官方建议区间（含 TTS/流式所需 torchaudio）
+torch>=2.3.0,<=2.8.0
+torchaudio<=2.8.0
+# 与 torch 2.8.0 配套（镜像预装的是 0.16.2+cu118，版本不匹配会在 import 时炸）
+torchvision==0.23.0
+
+# 配套
+accelerate>=0.30
+sentencepiece>=0.2
+protobuf>=4.25
+huggingface_hub>=0.20
+
+# GRPO 真实训练（LoRA 路径）需要
+peft>=0.10
+
+# duplex_server 模式联官方 wss 服务需要
+websocket-client>=1.6
+
+# 离线基线依赖（护栏/评测/reward/demo 需要：pyyaml/soundfile/librosa/pandas/pytest 等）
+-r requirements.txt

@@ -1,0 +1,152 @@
+{
+  "sim": {
+    "chars_per_s": 5.0,
+    "frame_ms": 300,
+    "conf_ramp": "0.65->1.0 * base + seeded noise",
+    "tts_prepare_ms": 700,
+    "eot_ms": 400
+  },
+  "risky": [
+    {
+      "name": "safety_critical",
+      "text": "现在就右转然后变道",
+      "utt_ms": 1800.0,
+      "n_frames": 6,
+      "keyword": "变道",
+      "keyword_frac": 0.778,
+      "final_action": "clarify",
+      "baseline_fulltext_action": "clarify",
+      "consistent": true,
+      "first_risk_ms": 1800,
+      "lead_ms": 0.0,
+      "lead_vs_eot_ms": 400.0,
+      "premature_exec_votes": 2,
+      "premature_exec_frames": 0,
+      "post_keyword_exec_frames": 0,
+      "prefetch_saving_ms": 400.0
+    },
+    {
+      "name": "hard_brake",
+      "text": "前方有情况马上急刹",
+      "utt_ms": 1800.0,
+      "n_frames": 6,
+      "keyword": "急刹",
+      "keyword_frac": 0.778,
+      "final_action": "clarify",
+      "baseline_fulltext_action": "clarify",
+      "consistent": true,
+      "first_risk_ms": 1800,
+      "lead_ms": 0.0,
+      "lead_vs_eot_ms": 400.0,
+      "premature_exec_votes": 2,
+      "premature_exec_frames": 0,
+      "post_keyword_exec_frames": 0,
+      "prefetch_saving_ms": 400.0
+    },
+    {
+      "name": "transfer_large",
+      "text": "帮我给张三转账五千块",
+      "utt_ms": 2000.0,
+      "n_frames": 7,
+      "keyword": "转账",
+      "keyword_frac": 0.5,
+      "final_action": "clarify",
+      "baseline_fulltext_action": "clarify",
+      "consistent": true,
+      "first_risk_ms": 1500,
+      "lead_ms": 500.0,
+      "lead_vs_eot_ms": 900.0,
+      "premature_exec_votes": 1,
+      "premature_exec_frames": 0,
+      "post_keyword_exec_frames": 0,
+      "prefetch_saving_ms": 700
+    },
+    {
+      "name": "delete_phrased",
+      "text": "帮我把相册里的视频删了",
+      "utt_ms": 2200.0,
+      "n_frames": 8,
+      "keyword": "删",
+      "keyword_frac": 0.818,
+      "final_action": "clarify",
+      "baseline_fulltext_action": "clarify",
+      "consistent": true,
+      "first_risk_ms": 2100,
+      "lead_ms": 100.0,
+      "lead_vs_eot_ms": 500.0,
+      "premature_exec_votes": 3,
+      "premature_exec_frames": 0,
+      "post_keyword_exec_frames": 0,
+      "prefetch_saving_ms": 500.0
+    }
+  ],
+  "benign": [
+    {
+      "name": "low_risk_clear",
+      "text": "今天天气怎么样",
+      "utt_ms": 1400.0,
+      "n_frames": 5,
+      "keyword": null,
+      "keyword_frac": null,
+      "final_action": "execute",
+      "baseline_fulltext_action": "execute",
+      "consistent": true,
+      "risk_seen": false
+    },
+    {
+      "name": "light_off",
+      "text": "帮我把客厅的灯关掉",
+      "utt_ms": 1800.0,
+      "n_frames": 6,
+      "keyword": null,
+      "keyword_frac": null,
+      "final_action": "execute",
+      "baseline_fulltext_action": "execute",
+      "consistent": true,
+      "risk_seen": false
+    },
+    {
+      "name": "alarm_set",
+      "text": "明早七点叫我起床",
+      "utt_ms": 1600.0,
+      "n_frames": 6,
+      "keyword": null,
+      "keyword_frac": null,
+      "final_action": "execute",
+      "baseline_fulltext_action": "execute",
+      "consistent": true,
+      "risk_seen": false
+    }
+  ],
+  "ambiguous": [
+    {
+      "name": "ambiguous",
+      "text": "帮我开一下那个",
+      "utt_ms": 1400.0,
+      "n_frames": 5,
+      "keyword": null,
+      "keyword_frac": null,
+      "final_action": "clarify",
+      "baseline_fulltext_action": "clarify",
+      "consistent": true,
+      "risk_seen": false
+    }
+  ],
+  "clear_voice_probe": {
+    "text": "帮我把相册里的视频删了",
+    "old_bonus_0.30_final": "execute",
+    "new_bonus_0.40_final": "clarify",
+    "fixed": true
+  },
+  "summary": {
+    "lead_vs_eot_ms_mean": 550.0,
+    "lead_vs_eot_ms_median": 450.0,
+    "prefetch_saving_ms_mean": 500.0,
+    "post_keyword_exec_frames_total": 0,
+    "premature_exec_votes_total": 8,
+    "premature_exec_confirmed_total": 0,
+    "benign_risk_false_alarm": 0,
+    "risky_baseline_consistent": 4
+  },
+  "note": "动词后置（把字句/句末动词）使关键词预警天然偏晚，lead=说完-锁存、lead_vs_eot=再加传统路径的收轮检测滞后(VAD hangover ~400ms)；预取收益按后者计。关键词前确有未确认的 execute 投票（置信爬过 min_conf 后、动词尚未落地），但 confirm_ratio 连续多数确认把 confirmed 窗口压到 0，且动作只在 finalize 落定——帧级决策仅用于预警与澄清话术预取。prefetch_saving 为解析模型：澄清 TTS 与剩余用户语音重叠准备，省 min(lead_vs_eot, TTS首块)。"
+}

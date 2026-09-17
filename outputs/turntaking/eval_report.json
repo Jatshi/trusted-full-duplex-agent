@@ -1,0 +1,68 @@
+{
+  "test_set": {
+    "n_utterances": 150,
+    "seed": 44,
+    "note": "base_aggressive 为策略模拟（可复现），非基座实测"
+  },
+  "strategies": {
+    "rule_pause": {
+      "n": 150,
+      "false_takeover_rate": 0.1133,
+      "miss_rate": 0.0,
+      "take_latency_ms_median": 534.9492694425644,
+      "take_latency_ms_mean": 490.0,
+      "backchannel_hit": 0.0,
+      "backchannel_noise": 0.0
+    },
+    "base_aggressive": {
+      "n": 150,
+      "false_takeover_rate": 0.3933,
+      "miss_rate": 0.14,
+      "take_latency_ms_median": 344.98594449751835,
+      "take_latency_ms_mean": 347.9,
+      "backchannel_hit": 0.0,
+      "backchannel_noise": 0.0
+    },
+    "learned": {
+      "n": 150,
+      "false_takeover_rate": 0.0,
+      "miss_rate": 0.0,
+      "take_latency_ms_median": 553.8847945204686,
+      "take_latency_ms_mean": 538.9,
+      "backchannel_hit": 0.8519,
+      "backchannel_noise": 0.36
+    }
+  },
+  "confirm_frames_pareto": {
+    "1": {
+      "false_takeover_rate": 0.24,
+      "miss_rate": 0.0,
+      "take_latency_ms_median": 265.1627549176229
+    },
+    "2": {
+      "false_takeover_rate": 0.0733,
+      "miss_rate": 0.0,
+      "take_latency_ms_median": 354.47224027940865
+    },
+    "3": {
+      "false_takeover_rate": 0.0133,
+      "miss_rate": 0.0,
+      "take_latency_ms_median": 454.1501396287595
+    },
+    "4": {
+      "false_takeover_rate": 0.0,
+      "miss_rate": 0.0,
+      "take_latency_ms_median": 553.8847945204686
+    },
+    "5": {
+      "false_takeover_rate": 0.0,
+      "miss_rate": 0.0,
+      "take_latency_ms_median": 653.8847945204686
+    },
+    "6": {
+      "false_takeover_rate": 0.0,
+      "miss_rate": 0.02,
+      "take_latency_ms_median": 752.2301333262831
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "mode": "offline",
+  "backend": "minicpm_o",
+  "vad": {
+    "threshold_db": -38.0,
+    "sustain_frames": 3,
+    "frame_ms": 100
+  },
+  "turn1_cut": {
+    "interrupted": true,
+    "text_before_cut": "我是一个语音助手，我可以回答问题、设置闹",
+    "vad_fired_at_ms": 800.0,
+    "user_onset_ms": 500.0,
+    "bot_audio_played_ms": 1200.0,
+    "stopped_at_ms": 1200.0,
+    "stop_latency_ms": 400.0
+  },
+  "turn2_bargein": {
+    "ttft_ms": 0.0,
+    "text": "好的，我先停一下，您请说。"
+  },
+  "turn3_probe": {
+    "ttft_ms": 0.0,
+    "text": "刚才我正在介绍我可以回答问题、设置闹钟、查询天气。",
+    "bigram_overlap_with_cut": 0.3103
+  },
+  "context_preserved_heuristic": true,
+  "bargein_delay_ms": 0,
+  "elapsed_s": 0.1,
+  "note": "半双工架构：VAD 检测流与模型输入流分离（检测只用能量，抢话音频在 Turn2 才完整入模）。真·边听边说需 duplex_server 模式（set_break 协议）。上下文保持为 heuristic 判定，请结合 bargein_turn3.wav 人工复核。"
+}

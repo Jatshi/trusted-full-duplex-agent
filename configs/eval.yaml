@@ -1,0 +1,32 @@
+# 评测配置 —— 输出可量化的全双工指标
+metrics:
+  first_token_latency_s: true      # 首 token 延迟
+  barge_in_latency_s: true         # 打断响应延迟
+  misuse_rate: true                # 误执行率（护栏核心指标）
+  takeover_latency_s: true         # 快慢路径切换延迟
+  turn_timing_score: true          # turn-taking 节奏分数
+  content_bleu: true               # 内容一致性（BLEU）
+  duplex_simultaneity: true        # 平均"并听并说"占比
+
+scenarios:
+  # 用这些输入场景跑评测（见 eval/run_eval.py）
+  - name: "ambiguous"
+    desc: "意图含糊，应澄清"
+  - name: "high_risk_reversible"
+    desc: "高风险但明确，应执行并二次确认"
+  - name: "safety_critical"
+    desc: "物理动作，应停止/澄清"
+  - name: "barge_in_interrupt"
+    desc: "中途被打断，应顺滑接住"
+
+inputs:
+  wav_dir: "data/eval_wavs"          # 每个场景放若干 wav
+  transcript_json: "data/eval_utterances.json"
+
+ablation:
+  enabled: true
+  variants: ["full", "no_gate", "confidence_only", "risk_only"]
+
+report:
+  out_dir: "outputs/eval_reports"
+  gen_figures: true

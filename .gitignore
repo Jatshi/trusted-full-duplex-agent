@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+
+# 模型权重与大型产物（权重走 HuggingFace，见 MANIFEST）
+weights/
+outputs/**/*.safetensors
+outputs/**/*.bin
+*.log
+
+# 凭据与本地运维脚本（含 SSH 密码，严禁入库）
+scripts/ssh_*
+scripts/_*.py
+scripts/_*.txt
+scripts/dl_local_poc_model.py
+scripts/tts_experiment.py
+scripts/diag_grpo_gen.py
+scripts/diag_safety_gen.py
+scripts/pull_backup_f.py
+scripts/tmp_check.py
+
+# 临时文件
+nohup.out
+.DS_Store
+Thumbs.db

@@ -1,0 +1,31 @@
+{
+  "mode": "real",
+  "backend": "minicpm_o",
+  "vad": {
+    "threshold_db": -38.0,
+    "sustain_frames": 3,
+    "frame_ms": 100
+  },
+  "turn1_cut": {
+    "interrupted": true,
+    "text_before_cut": "你好，我是面壁智能小钢炮，由面壁智能科技研发的人工智能助手。我知识面较广，能陪你聊天",
+    "vad_fired_at_ms": 5300.0,
+    "user_onset_ms": 5000.0,
+    "bot_audio_played_ms": 6000.0,
+    "stopped_at_ms": 6000.0,
+    "stop_latency_ms": 700.0
+  },
+  "turn2_bargein": {
+    "ttft_ms": 1146.0,
+    "text": "没问题，我停下来了。你想聊点什么呢？"
+  },
+  "turn3_probe": {
+    "ttft_ms": 1263.0,
+    "text": "我刚说到能陪你聊天，还能帮你写写东西。",
+    "bigram_overlap_with_cut": 0.0889
+  },
+  "context_preserved_heuristic": false,
+  "bargein_delay_ms": 4500,
+  "elapsed_s": 17.3,
+  "note": "半双工架构：VAD 检测流与模型输入流分离（检测只用能量，抢话音频在 Turn2 才完整入模）。真·边听边说需 duplex_server 模式（set_break 协议）。上下文保持为 heuristic 判定，请结合 bargein_turn3.wav 人工复核。"
+}

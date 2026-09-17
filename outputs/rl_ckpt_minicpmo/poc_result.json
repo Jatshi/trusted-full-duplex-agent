@@ -1,0 +1,22 @@
+{
+  "model": "weights/minicpm-o-4_5",
+  "steps": 20,
+  "pre_reward": 0.2753719076847036,
+  "post_reward": 0.335371819257905,
+  "delta": 0.05999991157320139,
+  "pre_family": {
+    "ambiguous": 0.2745098039215686,
+    "delete_phrased": 0.12556941968706672,
+    "high_risk_reversible": 0.37568780440030575,
+    "low_risk_clear": 0.1372549019607843,
+    "safety_critical": 0.4638376084537927
+  },
+  "post_family": {
+    "ambiguous": 0.37745098039215685,
+    "delete_phrased": 0.2391987996851753,
+    "high_risk_reversible": 0.27097214884659,
+    "low_risk_clear": 0.24019607843137256,
+    "safety_critical": 0.5490410889342301
+  },
+  "signal_steps": 17
+}
