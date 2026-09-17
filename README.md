@@ -99,7 +99,12 @@ python scripts/32_run_grpo.py --real --model <模型路径> \
 ## RL Checkpoints
 
 barge-in 上下文 GRPO 的 LoRA 权重（Qwen2.5-1.5B 与 MiniCPM-o 9B 各配置）与
-poc_result.json 见 HuggingFace 仓库（链接见 MANIFEST.md），或按上方命令复现训练。
+poc_result.json 见 HuggingFace：
+
+- Model：https://huggingface.co/jatshi/trusted-full-duplex-agent
+- Dataset（训练数据+用户语音+实证音频）：https://huggingface.co/datasets/jatshi/trusted-full-duplex-agent-data
+
+或按上方命令复现训练。
 
 ## 目录结构
 

@@ -20,6 +20,9 @@ scripts/diag_grpo_gen.py
 scripts/diag_safety_gen.py
 scripts/pull_backup_f.py
 scripts/tmp_check.py
+scripts/hf_upload.py
+hf_model_card.md
+hf_dataset_card.md
 
 # 临时文件
 nohup.out

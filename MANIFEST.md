@@ -2,6 +2,17 @@
 
 沿用你 NeuroCAP 的"可复现分发包"习惯：每个可交付件都有明确的生成入口与校验方式。
 
+## 发布渠道
+
+- **GitHub（代码+配置+数据+全部 JSON 报告与会话音频实证）**：
+  https://github.com/Jatshi/trusted-full-duplex-agent
+- **HuggingFace model（11 个 GRPO LoRA checkpoint + 逐运行 poc_result.json）**：
+  https://huggingface.co/jatshi/trusted-full-duplex-agent
+- **HuggingFace dataset（RL 训练数据 + turn-taking 帧数据 + 用户语音 + 实证音频）**：
+  https://huggingface.co/datasets/jatshi/trusted-full-duplex-agent-data
+- 本地全量备份（含 4 份训练日志）：`F:\tfd_remote_backup\`
+
+
 | 交付物 | 生成入口 | 是否可在本机(无GPU)验证 | 校验/指标 |
 |---|---|---|---|
 | 护栏三态门控 | `scripts/20_run_gate_demo.py --offline` | 是 | 五场景决策正确性 |
