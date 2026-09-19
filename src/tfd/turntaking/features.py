@@ -103,11 +103,18 @@ class FrameFeaturizer:
     def _slope(self) -> float:
         if len(self._hist) < 2:
             return 0.0
-        w = self._hist[-self.slope_n:]
+        w = np.asarray(self._hist[-self.slope_n:], dtype=np.float64)
         if len(w) < 2:
             return 0.0
-        x = np.arange(len(w))
-        return float(np.polyfit(x, w, 1)[0])   # dB/帧
+        # 一元最小二乘的闭式斜率。这里窗口最多只有约 5 帧，不需要调用
+        # np.polyfit -> LAPACK lstsq；闭式计算更快，也规避部分 Windows MKL
+        # 组合在高频小矩阵 lstsq 上出现的进程级 abort。
+        x = np.arange(len(w), dtype=np.float64)
+        x -= x.mean()
+        denom = float(np.dot(x, x))
+        if denom <= 0.0:
+            return 0.0
+        return float(np.dot(x, w - w.mean()) / denom)   # dB/帧
 
     def _speech_ratio(self, win_s: float) -> float:
         n = int(round(win_s / self.fs))

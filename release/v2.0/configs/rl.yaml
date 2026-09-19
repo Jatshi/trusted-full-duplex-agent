@@ -1,0 +1,40 @@
+# turn-taking RL 对齐配置 —— Direction B（GRPO）
+# 目标：教全双工模型"何时开口/何时停/被打断后怎么接"
+
+data:
+  stream_dir: "data/rl_streams"      # 离线对话流数据（可脚本从真实/合成语料生成）
+  max_len: 2048
+  min_turns: 2
+
+training:
+  base: "minicpm_o"                  # 与此基座对齐
+  lora_r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+  trainable_modules: "all"
+  lr: 5e-5
+  batch_size: 8
+  grad_accum: 2
+  epochs: 3
+  seed: 42
+
+rl:
+  algorithm: "grpo"                  # grpo | dpo | cdpo
+  group_size: 8                      # GRPO 组采样数
+  kl_scale: 0.1
+  # reward 加权
+  reward_weights:
+    turn_timing: 1.0     # 是否在正确时机开口/闭嘴
+    barge_in_grace: 1.0  # 被打断后是否顺滑接住
+    content_consistency: 1.0  # 内容是否和上文一致(不洗掉信息)
+    naturalness: 0.5     # 语速/停顿分布是否接近人（由评测器打分）
+    safety_gate_align: 0.7  # 与可信护栏是否一致（该停/该澄清时是否照做）
+
+output:
+  save_dir: "outputs/rl_ckpt"
+  save_every: 500
+
+compute:
+  micro_bs_per_gpu: 1
+  use_lora: true
+  offload: true                      # 24GB 卡建议开；显存够可关

@@ -16,6 +16,7 @@ class GateFeature:
     entropy: float               # 归一化不确定度 0~1
     intent: Optional[str] = None
     raw_text: Optional[str] = None
+    ambiguous: bool = False
 
     @property
     def decision_score(self) -> float:
@@ -103,6 +104,18 @@ class RiskEstimator:
             risk = max(risk, self.irrev_bonus if any(k in text for k in irrev) else risk)
             risk = max(risk, self.phys_bonus if any(k in text for k in phys) else risk)
         return min(1.0, risk)
+
+
+class AmbiguityEstimator:
+    """Detect phrases that are fluent but do not identify an actionable target."""
+
+    def __init__(self, gate_cfg: dict):
+        a = gate_cfg.get("ambiguity", {})
+        self.patterns = tuple(a.get("patterns", ["那个", "这个", "那件事", "你看着办"]))
+
+    def estimate(self, text: Optional[str]) -> bool:
+        normalized = (text or "").strip()
+        return bool(normalized) and any(pattern in normalized for pattern in self.patterns)
 
 
 def combine(feat: GateFeature, risk: float) -> GateFeature:

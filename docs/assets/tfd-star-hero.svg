@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="460" viewBox="0 0 1440 460" role="img" aria-labelledby="title desc">
+  <title id="title">TFD-STAR 2.0</title><desc id="desc">Trusted full-duplex speech agent architecture banner</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#102a30"/><stop offset="1" stop-color="#061013"/></linearGradient>
+    <linearGradient id="wave" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#61e6db"/><stop offset="1" stop-color="#c5f36b"/></linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="9" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#214148" stroke-width="1" opacity=".35"/></pattern>
+  </defs>
+  <rect width="1440" height="460" rx="28" fill="url(#bg)"/><rect width="1440" height="460" rx="28" fill="url(#grid)"/>
+  <circle cx="1250" cy="55" r="260" fill="none" stroke="#61e6db" opacity=".11"/><circle cx="1250" cy="55" r="195" fill="none" stroke="#61e6db" opacity=".13"/>
+  <text x="76" y="84" fill="#61e6db" font-family="Cascadia Mono,monospace" font-size="18" font-weight="700" letter-spacing="5">TRUSTED FULL-DUPLEX SPEECH AGENT</text>
+  <text x="72" y="192" fill="#f0fafa" font-family="Bahnschrift,Microsoft YaHei,sans-serif" font-size="92" font-weight="800" letter-spacing="-3">TFD-STAR <tspan fill="#61e6db">2.0</tspan></text>
+  <text x="76" y="250" fill="#b8ced1" font-family="Microsoft YaHei,sans-serif" font-size="26">会打断，会追问，会拒绝，也知道什么时候安静地继续听</text>
+  <g transform="translate(76 302)" font-family="Cascadia Mono,monospace" font-size="14" font-weight="700">
+    <rect width="174" height="44" rx="22" fill="#0b1a1e" stroke="#31535a"/><text x="21" y="28" fill="#dff6f4">TURN-TAKING MLP</text>
+    <rect x="190" width="139" height="44" rx="22" fill="#0b1a1e" stroke="#31535a"/><text x="215" y="28" fill="#dff6f4">TRUSTGATE</text>
+    <rect x="345" width="182" height="44" rx="22" fill="#0b1a1e" stroke="#789a45"/><text x="369" y="28" fill="#c5f36b">ASR SAFETY PATH</text>
+    <rect x="543" width="145" height="44" rx="22" fill="#0b1a1e" stroke="#31535a"/><text x="572" y="28" fill="#dff6f4">GRPO LORA</text>
+  </g>
+  <path d="M790 271 C825 271 825 164 860 164 S895 340 930 340 965 125 1000 125 1035 305 1070 305 1105 188 1140 188 1175 276 1210 276 1245 218 1280 218 1315 251 1360 251" fill="none" stroke="url(#wave)" stroke-width="7" stroke-linecap="round" filter="url(#glow)"/>
+  <g font-family="Cascadia Mono,monospace" font-size="13" fill="#7f9ca1"><text x="790" y="395">LISTEN</text><text x="958" y="395">GATE</text><text x="1122" y="395">SPEAK</text><text x="1281" y="395">YIELD</text></g>
+</svg>

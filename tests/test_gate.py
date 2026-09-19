@@ -42,6 +42,13 @@ def test_ambiguous_clarifies_after_frames():
     assert final.action == CLARIFY, final
 
 
+def test_acoustically_clear_but_semantically_ambiguous_still_clarifies():
+    g = _gate()
+    d = g.on_frame(text="帮我打开那个", logprob=-0.05, asr_confidence=0.95)
+    assert d.action == CLARIFY, d
+    assert "underspecified" in d.rationale
+
+
 def test_entropy_normalized():
     assert 0.0 <= _normalize_entropy([0.9, 0.1]) <= 1.0
     assert _normalize_entropy([0.25, 0.25, 0.25, 0.25]) == 1.0
@@ -108,8 +115,8 @@ def test_risk_estimator_bonuses():
     from tfd.gate.features import RiskEstimator
     est = RiskEstimator(load_config("gate"))
     assert est.estimate("帮我删除这个文件", None) == 0.4    # 不可逆类
-    assert est.estimate("现在就变道", None) == 0.5          # 物理类
-    assert est.estimate("删除之后马上变道", None) == 0.5    # 取 max
+    assert est.estimate("现在就变道", None) == 0.8          # 物理类
+    assert est.estimate("删除之后马上变道", None) == 0.8    # 取 max
     assert est.estimate("给我讲个笑话", None) == 0.0        # 良性
     assert 0.4 <= est.estimate("删除", None)                # 不可逆不低于确认线
 

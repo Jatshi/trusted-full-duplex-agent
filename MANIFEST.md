@@ -1,5 +1,25 @@
 # MANIFEST — Trusted Full-Duplex Speech Agent
 
+## 2.0 发布补充（2026-09-19）
+
+2.0 将此前分离的研究组件接入真实 MiniCPM-o-Demo 服务。新增产物：
+
+- `integrations/minicpmo45-demo/`：上游最小差异补丁、项目新增 runtime 文件、
+  一键应用脚本和无凭据环境变量模板；
+- `docs/TFD_STAR_2.0_全双工可信语音智能体_深度学习手册.html`：独立可打开的
+  深度学习与工程手册；
+- `docs/V2_ARCHITECTURE_AND_RESULTS.md`：能力归属和证据边界摘要；
+- `release/v2.0/`：部署 adapter/MLP/config/voice 的 HF 发布目录与结果清单；
+- `RELEASE_NOTES_v2.0.md`、`CHANGELOG.md`：版本说明。
+
+2.0 在线链路已确认加载：MiniCPM-o 9B GRPO adapter、真实 turn-taking MLP、
+Faster-Whisper-small CPU-int8 ASR 与 TrustGate。ASR、实时接线、voiced-frame
+watermark、客户端即时打断、listen reason、统一护栏音色、LoRA 后 TTS-only
+compile 和自适应播放缓冲均为 2.0 新增。
+
+第三方基座权重不重复发布。F 盘归档保留完整修改版 Demo 和全部项目自有产物，
+并附单独归档清单；GitHub 只发布可审查的源代码差异，Hugging Face 发布权重。
+
 沿用你 NeuroCAP 的"可复现分发包"习惯：每个可交付件都有明确的生成入口与校验方式。
 
 ## 发布渠道

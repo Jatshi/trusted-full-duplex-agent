@@ -9,7 +9,13 @@ import logging
 from dataclasses import dataclass, field
 from collections import deque
 
-from .features import ConfidenceEstimator, RiskEstimator, GateFeature, combine
+from .features import (
+    AmbiguityEstimator,
+    ConfidenceEstimator,
+    RiskEstimator,
+    GateFeature,
+    combine,
+)
 
 logger = logging.getLogger("tfd.gate")
 
@@ -43,6 +49,7 @@ class TrustGate:
         self.window = int(self.confirm_ratio * 10) + 2  # 连续多数窗口
         self.conf_est = ConfidenceEstimator(gate_cfg)
         self.risk_est = RiskEstimator(gate_cfg)
+        self.ambiguity_est = AmbiguityEstimator(gate_cfg)
         # 风险达此阈值绝不直接执行（避免"听清了就乱动"）
         self.risk_floor = gate_cfg.get("risk", {}).get("risk_confirm_floor", 0.4)
         self._decisions: deque = deque(maxlen=self.window)
@@ -66,6 +73,7 @@ class TrustGate:
             logprob=logprob, asr_confidence=asr_confidence, intent_probs=intent_probs
         )
         feat.raw_text = text
+        feat.ambiguous = self.ambiguity_est.estimate(text)
         risk = self.risk_est.estimate(text, intent)
         if risk > 0 and not self.risk_seen:
             self.risk_seen = True
@@ -93,6 +101,11 @@ class TrustGate:
     def _decide(self, feat: GateFeature) -> tuple[str, float, str]:
         s = feat.decision_score
         conf = feat.confidence
+        # ASR can be confident about a linguistically vague request.  This is
+        # semantic uncertainty, not acoustic uncertainty, so it needs its own
+        # explicit path instead of abusing the ASR-confidence threshold.
+        if feat.ambiguous:
+            return CLARIFY, s, "underspecified target -> clarify"
         # 绝对置信度兜底：完全听不出时即使风险低也强制澄清；
         # 若叠加了风险，则宁停不猜（不做任何不安全动作）
         if conf < self.min_conf:

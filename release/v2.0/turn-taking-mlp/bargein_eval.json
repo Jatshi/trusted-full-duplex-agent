@@ -1,0 +1,114 @@
+{
+  "vad": {
+    "threshold_db": -38.0,
+    "sustain_frames": 3,
+    "frame_ms": 100
+  },
+  "detail": [
+    {
+      "chunk_ms": 100,
+      "bargein_at_ms": 800,
+      "n_trials": 5,
+      "n_interrupted": 5,
+      "detection_latency_ms_mean": 300.0,
+      "stop_latency_ms_mean": 0.0,
+      "stop_latency_ms_max": 0.0,
+      "total_latency_ms_mean": 300.0,
+      "total_latency_ms_max": 300.0
+    },
+    {
+      "chunk_ms": 100,
+      "bargein_at_ms": 1600,
+      "n_trials": 5,
+      "n_interrupted": 5,
+      "detection_latency_ms_mean": 300.0,
+      "stop_latency_ms_mean": 0.0,
+      "stop_latency_ms_max": 0.0,
+      "total_latency_ms_mean": 300.0,
+      "total_latency_ms_max": 300.0
+    },
+    {
+      "chunk_ms": 100,
+      "bargein_at_ms": 2400,
+      "n_trials": 5,
+      "n_interrupted": 5,
+      "detection_latency_ms_mean": 300.0,
+      "stop_latency_ms_mean": 0.0,
+      "stop_latency_ms_max": 0.0,
+      "total_latency_ms_mean": 300.0,
+      "total_latency_ms_max": 300.0
+    },
+    {
+      "chunk_ms": 200,
+      "bargein_at_ms": 800,
+      "n_trials": 5,
+      "n_interrupted": 5,
+      "detection_latency_ms_mean": 300.0,
+      "stop_latency_ms_mean": 100.0,
+      "stop_latency_ms_max": 100.0,
+      "total_latency_ms_mean": 400.0,
+      "total_latency_ms_max": 400.0
+    },
+    {
+      "chunk_ms": 200,
+      "bargein_at_ms": 1600,
+      "n_trials": 5,
+      "n_interrupted": 5,
+      "detection_latency_ms_mean": 300.0,
+      "stop_latency_ms_mean": 100.0,
+      "stop_latency_ms_max": 100.0,
+      "total_latency_ms_mean": 400.0,
+      "total_latency_ms_max": 400.0
+    },
+    {
+      "chunk_ms": 200,
+      "bargein_at_ms": 2400,
+      "n_trials": 5,
+      "n_interrupted": 5,
+      "detection_latency_ms_mean": 300.0,
+      "stop_latency_ms_mean": 100.0,
+      "stop_latency_ms_max": 100.0,
+      "total_latency_ms_mean": 400.0,
+      "total_latency_ms_max": 400.0
+    },
+    {
+      "chunk_ms": 500,
+      "bargein_at_ms": 800,
+      "n_trials": 5,
+      "n_interrupted": 5,
+      "detection_latency_ms_mean": 300.0,
+      "stop_latency_ms_mean": 400.0,
+      "stop_latency_ms_max": 400.0,
+      "total_latency_ms_mean": 700.0,
+      "total_latency_ms_max": 700.0
+    },
+    {
+      "chunk_ms": 500,
+      "bargein_at_ms": 1600,
+      "n_trials": 5,
+      "n_interrupted": 5,
+      "detection_latency_ms_mean": 300.0,
+      "stop_latency_ms_mean": 100.0,
+      "stop_latency_ms_max": 100.0,
+      "total_latency_ms_mean": 400.0,
+      "total_latency_ms_max": 400.0
+    },
+    {
+      "chunk_ms": 500,
+      "bargein_at_ms": 2400,
+      "n_trials": 5,
+      "n_interrupted": 5,
+      "detection_latency_ms_mean": 300.0,
+      "stop_latency_ms_mean": 300.0,
+      "stop_latency_ms_max": 300.0,
+      "total_latency_ms_mean": 600.0,
+      "total_latency_ms_max": 600.0
+    }
+  ],
+  "latency_by_chunk_ms": {
+    "100": 300.0,
+    "200": 400.0,
+    "500": 566.7
+  },
+  "note": "本地机制评测：真实 bot 音频 + 合成插话。真基座打断后的KV 上下文保持见远端 63_duplex_bargein.py"
+}

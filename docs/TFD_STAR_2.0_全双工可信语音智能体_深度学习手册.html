@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>TFD-STAR 2.0 全双工可信语音智能体 · 深度学习手册</title>
+  <style>
+    :root{
+      --ink:#eef7f7;--muted:#9eb4b8;--faint:#6f858a;--paper:#071013;
+      --panel:#0c181c;--panel2:#102126;--line:#20383d;--cyan:#61e6db;
+      --lime:#c5f36b;--amber:#ffc86a;--red:#ff7e79;--blue:#7db7ff;
+      --radius:18px;--shadow:0 20px 60px rgba(0,0,0,.3);
+      --mono:"DM Mono","Cascadia Mono",Consolas,monospace;
+      --display:Bahnschrift,"HarmonyOS Sans SC","Microsoft YaHei",sans-serif;
+      --body:"Work Sans","HarmonyOS Sans SC","Microsoft YaHei",sans-serif;
+    }
+    *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:28px}
+    body{margin:0;background:
+      radial-gradient(circle at 85% 4%,rgba(97,230,219,.11),transparent 30rem),
+      radial-gradient(circle at 12% 30%,rgba(197,243,107,.05),transparent 28rem),
+      var(--paper);color:var(--ink);font:16px/1.75 var(--body)}
+    a{color:var(--cyan);text-decoration-thickness:1px;text-underline-offset:3px}
+    code,kbd{font-family:var(--mono);font-size:.9em}code{color:#b9fff8}
+    pre{overflow:auto;padding:20px;border:1px solid var(--line);border-radius:14px;background:#050b0d;color:#d8efef;line-height:1.55}
+    .shell{max-width:1480px;margin:auto;padding:24px;display:grid;grid-template-columns:290px minmax(0,1fr);gap:34px}
+    .rail{position:sticky;top:18px;align-self:start;max-height:calc(100vh - 36px);overflow:auto;padding:18px;border:1px solid var(--line);border-radius:18px;background:rgba(8,18,21,.9);backdrop-filter:blur(14px)}
+    .rail .mark{display:flex;align-items:center;gap:11px;font:700 15px var(--display);letter-spacing:.05em}
+    .pulse{width:14px;height:14px;border-radius:50%;background:var(--cyan);box-shadow:0 0 0 6px rgba(97,230,219,.1)}
+    .rail small{display:block;color:var(--faint);margin:8px 0 16px}
+    .rail input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#081316;color:var(--ink);outline:none}
+    .rail input:focus{border-color:var(--cyan)}
+    nav{margin-top:14px;display:grid;gap:2px}nav a{color:var(--muted);text-decoration:none;padding:6px 9px;border-left:2px solid transparent;font-size:13px}nav a:hover,nav a.active{color:var(--ink);border-color:var(--cyan);background:rgba(97,230,219,.06)}
+    main{min-width:0}.hero{position:relative;overflow:hidden;padding:56px 52px 46px;border:1px solid var(--line);border-radius:26px;background:linear-gradient(145deg,rgba(16,34,39,.96),rgba(6,14,17,.94));box-shadow:var(--shadow)}
+    .hero:after{content:"";position:absolute;right:-100px;top:-170px;width:450px;height:450px;border:1px solid rgba(97,230,219,.26);border-radius:50%;box-shadow:0 0 0 48px rgba(97,230,219,.025),0 0 0 96px rgba(97,230,219,.018)}
+    .eyebrow{font:700 12px var(--mono);letter-spacing:.16em;color:var(--cyan);text-transform:uppercase}.hero h1{font:800 clamp(36px,6vw,78px)/.98 var(--display);letter-spacing:-.045em;margin:22px 0;max-width:900px}.hero h1 span{color:var(--cyan)}
+    .hero p{max-width:920px;color:#bfd0d3;font-size:18px}.chips{display:flex;flex-wrap:wrap;gap:9px;margin-top:26px}.chip,.badge{display:inline-flex;align-items:center;border-radius:999px;padding:5px 10px;border:1px solid var(--line);background:#0a1619;font:700 11px var(--mono);letter-spacing:.05em}.badge.new{border-color:rgba(197,243,107,.55);color:var(--lime);background:rgba(197,243,107,.08)}.badge.base{color:var(--blue)}.badge.truth{color:var(--amber)}
+    section{margin:28px 0;padding:34px;border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(165deg,rgba(12,24,28,.92),rgba(7,16,19,.92))}section:target{border-color:rgba(97,230,219,.55)}
+    h2{font:800 31px/1.15 var(--display);letter-spacing:-.02em;margin:0 0 18px}h3{font:750 20px/1.3 var(--display);margin:30px 0 12px}h4{font:700 15px var(--display);color:var(--cyan);margin:20px 0 8px}
+    p{margin:10px 0;color:#cedbdd}.lead{font-size:18px;color:#e7f3f3}.muted{color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.card{padding:20px;border:1px solid var(--line);border-radius:14px;background:rgba(16,33,38,.7)}.card h3{margin-top:0}.metric{font:800 34px var(--display);color:var(--cyan);letter-spacing:-.03em}.metric small{font:500 13px var(--mono);color:var(--muted)}
+    .callout{margin:18px 0;padding:18px 20px;border-left:4px solid var(--cyan);border-radius:0 12px 12px 0;background:rgba(97,230,219,.065)}.callout.warn{border-color:var(--amber);background:rgba(255,200,106,.07)}.callout.red{border-color:var(--red);background:rgba(255,126,121,.07)}.callout.new{border-color:var(--lime);background:rgba(197,243,107,.07)}
+    table{width:100%;border-collapse:separate;border-spacing:0;margin:18px 0;font-size:14px}th,td{text-align:left;vertical-align:top;padding:12px 13px;border-bottom:1px solid var(--line)}th{position:sticky;top:0;background:#102126;color:#dff7f5;font:700 12px var(--mono);letter-spacing:.04em}tr:last-child td{border-bottom:0}
+    .flow{display:grid;grid-template-columns:repeat(7,minmax(95px,1fr));gap:8px;align-items:stretch;margin:24px 0}.node{position:relative;padding:16px 10px;border:1px solid var(--line);border-radius:12px;background:#0a171a;text-align:center;font-size:13px}.node strong{display:block;color:var(--cyan);margin-bottom:4px}.node:not(:last-child):after{content:"→";position:absolute;right:-11px;top:40%;z-index:2;color:var(--lime);font-weight:900}.node.new{border-color:rgba(197,243,107,.55)}
+    .timeline{position:relative;margin:24px 0 0;padding-left:28px}.timeline:before{content:"";position:absolute;left:8px;top:10px;bottom:10px;width:2px;background:linear-gradient(var(--cyan),var(--lime))}.event{position:relative;margin:0 0 22px}.event:before{content:"";position:absolute;left:-26px;top:7px;width:10px;height:10px;border-radius:50%;background:var(--paper);border:2px solid var(--cyan)}.event strong{color:var(--ink)}
+    .formula{margin:18px 0;padding:18px;text-align:center;border:1px dashed #34565d;border-radius:12px;background:#071215;font:600 16px var(--mono);color:#d4fffb}.formula b{color:var(--lime)}
+    details{margin:12px 0;border:1px solid var(--line);border-radius:12px;background:#091518}summary{cursor:pointer;padding:14px 16px;font-weight:700;color:#e5f3f3}details>div{padding:0 17px 16px}.kbd{display:inline-block;padding:1px 7px;border:1px solid #42575b;border-bottom-width:3px;border-radius:6px;background:#132226;font:12px var(--mono)}
+    .truth-map{display:grid;grid-template-columns:170px 1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}.truth-map>*{padding:13px;background:#0c181c}.truth-map .head{font:700 11px var(--mono);color:var(--cyan);letter-spacing:.06em}.yes{color:var(--lime)}.no{color:var(--red)}
+    .diagram{border:1px solid var(--line);border-radius:16px;background:#061013;padding:10px;overflow:auto}.diagram svg{display:block;width:100%;min-width:760px;height:auto}.diagram text{font-family:var(--body);fill:#d9eded}.diagram .small{font-family:var(--mono);font-size:12px;fill:#95aeb2}
+    .code-map{columns:2;column-gap:24px}.code-map li{break-inside:avoid;margin:0 0 10px}.tag{font:700 10px var(--mono);letter-spacing:.06em;color:var(--lime)}
+    .checklist{list-style:none;padding:0}.checklist li{position:relative;padding:8px 0 8px 30px;border-bottom:1px dashed rgba(32,56,61,.8)}.checklist li:before{content:"";position:absolute;left:2px;top:15px;width:13px;height:13px;border:1px solid var(--cyan);border-radius:3px}
+    footer{padding:30px 8px 80px;color:var(--faint);font-size:13px}.print-only{display:none}
+    @media(max-width:1050px){.shell{grid-template-columns:1fr}.rail{position:relative;max-height:none}.rail nav{grid-template-columns:repeat(2,1fr)}.flow{grid-template-columns:repeat(2,1fr)}.node:not(:last-child):after{display:none}.grid.three{grid-template-columns:1fr 1fr}}
+    @media(max-width:700px){.shell{padding:10px}.hero{padding:34px 22px}.hero h1{font-size:42px}section{padding:23px 18px}.grid,.grid.three{grid-template-columns:1fr}.truth-map{grid-template-columns:1fr}.truth-map .head{display:none}.code-map{columns:1}.rail nav{grid-template-columns:1fr}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+    @media print{body{background:white;color:#111;font-size:11pt}.shell{display:block;max-width:none}.rail{display:none}.hero,section{box-shadow:none;background:white;color:#111;border-color:#bbb;break-inside:avoid}.hero p,p,.muted{color:#333}.print-only{display:block}.badge,.chip{border-color:#777;background:white}.diagram,.card,pre,.formula{background:white;color:#111}.diagram text{fill:#111}.node{background:white}.node strong,h2,h3,h4{color:#111}}
+  </style>
+</head>
+<body>
+<div class="shell">
+  <aside class="rail" aria-label="章节导航">
+    <div class="mark"><span class="pulse"></span>TFD-STAR 2.0</div>
+    <small>Full-Duplex Trustworthy Speech Agent<br>深度学习与工程讲解</small>
+    <label for="search" class="eyebrow">章节筛选</label>
+    <input id="search" type="search" placeholder="例如：GRPO / ASR / MLP">
+    <nav id="toc">
+      <a href="#one-minute">00 一分钟讲清</a><a href="#version">01 版本与归属</a>
+      <a href="#architecture">02 端到端架构</a><a href="#runtime">03 一帧怎么走</a>
+      <a href="#base">04 MiniCPM-o 基座</a><a href="#turn-mlp">05 语轮 MLP</a>
+      <a href="#trustgate">06 TrustGate</a><a href="#asr">07 ASR 新增链路</a>
+      <a href="#grpo">08 GRPO 与 LoRA</a><a href="#bargein">09 打断与回声</a>
+      <a href="#voice">10 护栏语音统一</a><a href="#latency">11 实时优化</a>
+      <a href="#metrics">12 指标含义</a><a href="#evidence">13 实验结果</a>
+      <a href="#data">14 数据长什么样</a><a href="#code">15 代码地图</a>
+      <a href="#reproduce">16 从零复现</a><a href="#debug">17 踩坑与排障</a>
+      <a href="#limits">18 诚实边界</a><a href="#interview">19 面试问答</a>
+      <a href="#exercises">20 掌握检查</a><a href="#glossary">21 术语表</a>
+    </nav>
+  </aside>
+
+  <main>
+    <header class="hero" id="top">
+      <div class="eyebrow">Release study manual · 2026-09-19</div>
+      <h1>让语音智能体既会<span>插话与让行</span>，也知道什么时候不该执行</h1>
+      <p>这不是“套了一个网页的 MiniCPM-o Demo”。TFD-STAR 2.0 把基座的 speech-to-speech 能力、项目自己的语轮 MLP、GRPO LoRA、TrustGate，以及后来补上的 ASR 安全转写真正接到同一条实时链路中。本手册按真实代码、真实配置和实测结果讲清每个部件。</p>
+      <div class="chips">
+        <span class="chip">MiniCPM-o 4.5</span><span class="chip">GRPO + PEFT LoRA</span>
+        <span class="chip">10→32→3 Turn MLP</span><span class="chip">TrustGate</span>
+        <span class="chip">Faster-Whisper-small</span><span class="chip">Browser AEC + Barge-in</span>
+      </div>
+    </header>
+
+    <section id="one-minute" data-search="一分钟 项目 目的 总结">
+      <h2>00 · 一分钟把项目讲清楚</h2>
+      <p class="lead">项目解决的是一个典型的语音 Agent 落地矛盾：模型越追求“像人一样随时开口”，越可能抢话、误听后执行危险动作，或者在用户打断后丢掉上下文；系统越保守，又会变成反应迟钝的按键式助手。</p>
+      <div class="grid three">
+        <div class="card"><div class="metric">何时说</div><p>语轮 MLP 每 100 ms 读取声学时序特征，输出 <code>hold / take / backchannel</code>。连续 4 帧确认后才允许基座开口。</p></div>
+        <div class="card"><div class="metric">能否做</div><p>TrustGate 根据语义含糊、风险词与置信度选择 <code>execute / clarify / stop</code>，高风险动作不会因“听得清”就直接执行。</p></div>
+        <div class="card"><div class="metric">怎么学</div><p>GRPO 对同一个提示采样一组回复，以内容一致性、护栏动作和上下文回忆评分，用组内相对优势更新 LoRA。</p></div>
+      </div>
+      <div class="callout new"><span class="badge new">2.0 新增</span> 早期 TrustGate 只在离线脚本中接收现成文本，实时 Demo 实际无法从麦克风得到可判定文本。2.0 增加 Faster-Whisper-small，把真实波形转成文字、平均 log-prob 和 no-speech 概率，TrustGate 才真正进入在线链路。</div>
+      <h3>面试口述版</h3>
+      <p>“我做的是一个可信全双工语音智能体。MiniCPM-o 负责理解和生成语音，我在它外面加了三层控制。第一层是浏览器本地即时打断，让用户一开口就先停播放器；第二层是训练过的轻量语轮 MLP，判断该继续听、接话还是给反馈；第三层是 ASR 驱动的 TrustGate，判断请求能直接执行、需要追问还是必须停止。我还用 GRPO LoRA 对打断后的上下文回忆和安全动作做了后训练，并把所有层接进真实 WebSocket Demo，而不是只做离线指标。”</p>
+    </section>
+
+    <section id="version" data-search="版本 新增 归属 基座 自研">
+      <h2>01 · 版本演进与能力归属</h2>
+      <div class="timeline">
+        <div class="event"><strong>上游基座</strong><p>MiniCPM-o 4.5 提供多模态编码、内部 LLM、listen/speak token、TTS 与 token2wav；MiniCPM-o-Demo 提供 Gateway、Worker、Python backend 和浏览器协议。</p></div>
+        <div class="event"><strong>TFD 1.x：研究闭环</strong><p>完成 TrustGate、合成语轮数据与 MLP、barge-in 评测、GRPO 训练脚本、LoRA 权重和离线回放 Demo。研究链路成立，但在线 Demo 与自研组件没有全部接通。</p></div>
+        <div class="event"><strong>TFD-STAR 2.0：真实集成</strong> <span class="badge new">NEW</span><p>把 LoRA、语轮 MLP、真实 ASR、TrustGate、统一护栏语音、前端即时打断、播放抗抖和性能指标接进真实服务器。</p></div>
+      </div>
+      <div class="truth-map" role="table" aria-label="能力归属">
+        <div class="head">能力</div><div class="head">来源</div><div class="head">本项目贡献</div>
+        <div>语音理解/生成</div><div>MiniCPM-o 4.5</div><div>调用与部署，不声称从零训练</div>
+        <div>全双工服务骨架</div><div>OpenBMB Demo</div><div>协议修复、实时控制层、品牌 UI、测试</div>
+        <div>语轮决策器</div><div class="yes">本项目</div><div>10维特征、MLP、确认平滑、评测</div>
+        <div>TrustGate</div><div class="yes">本项目</div><div>三态策略、风险锁存、含糊分支、阈值配置</div>
+        <div>GRPO LoRA</div><div class="yes">本项目</div><div>数据、reward、最小可微训练器、适配器部署</div>
+        <div>在线 ASR 安全监视</div><div><span class="badge new">2.0 新增</span> Faster-Whisper</div><div>实时接线、繁简归一化、置信度、噪声兜底</div>
+      </div>
+      <div class="callout warn"><strong>必须诚实：</strong>“全双工模型能力”不是本项目从零训练；本项目的价值是把可训练的时机决策、可解释的可信护栏、RL 适配器和低延迟交互工程整合成可验证系统。</div>
+    </section>
+
+    <section id="architecture" data-search="架构 browser gateway worker backend MiniCPM ASR TrustGate">
+      <h2>02 · 端到端架构：七层各司其职</h2>
+      <div class="flow">
+        <div class="node"><strong>浏览器</strong>AEC/NS/AGC<br>16 kHz Float32</div>
+        <div class="node new"><strong>本地打断</strong>播放时 VAD<br>立即 stopAll</div>
+        <div class="node"><strong>Gateway</strong>会话与路由<br>WebSocket</div>
+        <div class="node"><strong>Worker</strong>队列与后端代理</div>
+        <div class="node new"><strong>语轮 + ASR</strong>MLP 时机<br>Whisper 文本</div>
+        <div class="node"><strong>TrustGate</strong>执行/追问/停止</div>
+        <div class="node"><strong>MiniCPM-o</strong>prefill/generate<br>TTS/token2wav</div>
+      </div>
+      <div class="diagram">
+        <svg viewBox="0 0 1080 510" role="img" aria-label="TFD-STAR 双环架构图">
+          <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#61e6db"/></marker></defs>
+          <rect x="34" y="40" width="250" height="185" rx="18" fill="#0d2025" stroke="#2e555b"/>
+          <text x="58" y="74" font-size="20" font-weight="700">客户端即时环</text>
+          <text x="58" y="110" class="small">Realtek 麦克风 → WebAudio</text><text x="58" y="136" class="small">AEC / NS / AGC</text>
+          <text x="58" y="162" class="small">播放期间本地 VAD</text><text x="58" y="188" class="small">命中：stopAll() & one-shot force_listen</text>
+          <rect x="350" y="40" width="690" height="185" rx="18" fill="#0d2025" stroke="#2e555b"/>
+          <text x="374" y="74" font-size="20" font-weight="700">服务器可信环</text>
+          <rect x="375" y="98" width="135" height="82" rx="12" fill="#0a171a" stroke="#61e6db"/><text x="396" y="127">Turn MLP</text><text x="396" y="151" class="small">hold/take/back</text>
+          <rect x="542" y="98" width="135" height="82" rx="12" fill="#0a171a" stroke="#c5f36b"/><text x="564" y="127">ASR 2.0</text><text x="564" y="151" class="small">text + logprob</text>
+          <rect x="710" y="98" width="135" height="82" rx="12" fill="#0a171a" stroke="#61e6db"/><text x="733" y="127">TrustGate</text><text x="728" y="151" class="small">E / C / S</text>
+          <rect x="878" y="98" width="135" height="82" rx="12" fill="#0a171a" stroke="#7db7ff"/><text x="897" y="127">MiniCPM-o</text><text x="899" y="151" class="small">listen/speak</text>
+          <path d="M510 139 H542 M677 139 H710 M845 139 H878" stroke="#61e6db" stroke-width="2" marker-end="url(#arrow)"/>
+          <path d="M284 136 H350" stroke="#61e6db" stroke-width="2" marker-end="url(#arrow)"/>
+          <rect x="34" y="282" width="1006" height="176" rx="18" fill="#09181c" stroke="#20383d"/>
+          <text x="58" y="316" font-size="20" font-weight="700">训练与证据层</text>
+          <rect x="64" y="342" width="190" height="76" rx="12" fill="#0b2024" stroke="#2e555b"/><text x="86" y="371">GRPO 数据</text><text x="86" y="396" class="small">风险族 / 打断回忆</text>
+          <rect x="296" y="342" width="190" height="76" rx="12" fill="#0b2024" stroke="#2e555b"/><text x="318" y="371">组内 reward</text><text x="318" y="396" class="small">Jaccard + BLEU + action</text>
+          <rect x="528" y="342" width="190" height="76" rx="12" fill="#0b2024" stroke="#2e555b"/><text x="550" y="371">PEFT LoRA</text><text x="550" y="396" class="small">r=16, α=32</text>
+          <rect x="760" y="342" width="240" height="76" rx="12" fill="#0b2024" stroke="#2e555b"/><text x="782" y="371">评测 + 负结果</text><text x="782" y="396" class="small">A/B、噪声带、端到端日志</text>
+          <path d="M254 380 H296 M486 380 H528 M718 380 H760" stroke="#c5f36b" stroke-width="2" marker-end="url(#arrow)"/>
+          <path d="M624 342 C624 280 945 276 945 181" fill="none" stroke="#c5f36b" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+        </svg>
+      </div>
+      <p class="muted">两条环路是关键：客户端环追求“用户一开口，听感立即停止”；服务器环追求“什么时候允许模型开口，以及这条指令能否执行”。前者不能代替后者，后者也不能弥补公网往返造成的打断迟钝。</p>
+    </section>
+
+    <section id="runtime" data-search="运行时 流程 一帧 audio chunk watermark">
+      <h2>03 · 一块真实音频到底怎么走</h2>
+      <ol>
+        <li><strong>采集：</strong>浏览器请求指定输入设备，开启 echo cancellation、noise suppression 与 auto gain control，得到 16 kHz 单声道 Float32 PCM。</li>
+        <li><strong>本地判断：</strong>仅在智能体正在播音时运行轻量 VAD。一旦确认真人插话，浏览器先清空播放队列，再在下一块上行消息中只携带一次 <code>force_listen</code>。</li>
+        <li><strong>服务器接收：</strong><code>server.py::_push_full_duplex</code> 解码音频和视频帧；若是客户端插话，则重置当前用户语轮的 MLP 与 TrustGate 状态。</li>
+        <li><strong>语轮决策：</strong><code>StreamingTurnController</code> 把任意大小 chunk 切成 100 ms 帧，提取 10 维特征，MLP 输出概率与动作。只有检测到足够语音、足够尾部静音且动作连续确认为 <code>take</code>，才 <code>allow_speak=true</code>。</li>
+        <li><strong>安全转写：</strong><span class="badge new">2.0 新增</span> 累计真实波形交给 Faster-Whisper；输出经繁体转简体，计算 segment 时长加权 avg_logprob 和 no-speech probability。</li>
+        <li><strong>TrustGate：</strong>文字进入含糊、风险和置信度三条路径，选择 <code>execute / clarify / stop / listen</code>。</li>
+        <li><strong>动作：</strong><code>execute</code> 让 MiniCPM-o 正常 <code>duplex_prefill + duplex_generate</code>；<code>clarify/stop</code> 阻止自由生成并播放确定性护栏语音；<code>listen</code> 继续等待。</li>
+        <li><strong>下行：</strong>服务器返回 text/audio/listen delta，并携带 turn、gate、prefill、wall-clock、KV 等指标。前端依据 <code>reason</code> 区分正常轮次结束与真正打断。</li>
+      </ol>
+      <div class="callout new"><strong>语音水位线修复：</strong>2.0 记录 <code>_gate_released_voiced_frames</code>。若没有新 voiced frame，就不对同一段 12 秒滚动窗口重复做 ASR/TrustGate。这个修复直接解决“沉默时反复识别旧话并重复路由”的问题。</div>
+    </section>
+
+    <section id="base" data-search="MiniCPM-o 基座 llm tts token2wav KV listen speak">
+      <h2>04 · MiniCPM-o 4.5 在系统里负责什么</h2>
+      <p>基座同时处理音频上下文和语音输出。服务器每个时间单元先做 <code>duplex_prefill</code>，把新的音频特征写入流式状态；再做 <code>duplex_generate</code>，模型可能生成 <code>&lt;|listen|&gt;</code>，也可能生成 <code>&lt;|speak|&gt;</code> 后的文本 token 和语音 token。TTS/Token2Wav 把语音 token 转成约 24 kHz 波形。</p>
+      <div class="grid">
+        <div class="card"><h3>保留的状态</h3><p>跨 chunk 的音频编码状态、LLM KV cache、语音生成缓冲和当前 listen/speak 模式。它们决定流式连续性；每块都重新建会话会彻底失去全双工意义。</p></div>
+        <div class="card"><h3>外挂控制的边界</h3><p>MLP 与 TrustGate 不替换基座理解能力。它们分别控制“是否放行说话”和“是否允许自由回答/执行”。最终自然语言与正常语音仍由基座产生。</p></div>
+      </div>
+      <h3>为什么叫系统层全双工</h3>
+      <p>当前真实服务已经使用 listen/speak 双流接口，但可信控制主要在系统层完成。浏览器可在模型输出时继续采集，客户端能即时截断播放，后端可继续 prefill 用户声音，并依据外部时机/安全模块约束生成。因此它不只是“上传整段录音后等待整段回复”，但也不能把所有行为都宣称为我们重新训练出的模型内生全双工能力。</p>
+    </section>
+
+    <section id="turn-mlp" data-search="语轮 MLP 10维 特征 hold take backchannel 训练 交叉熵">
+      <h2>05 · 语轮 MLP：把“什么时候开口”独立出来</h2>
+      <p class="lead">它不是 ASR，也不理解句子含义。它观察声学时序，回答一个更小但很重要的问题：这一刻应该继续听、接管话轮，还是给简短反馈？</p>
+      <h3>输入：每 100 ms 的 10 维因果特征</h3>
+      <table><thead><tr><th>特征</th><th>含义</th><th>为什么有用</th></tr></thead><tbody>
+        <tr><td><code>energy_db</code></td><td>当前帧能量，映射到 0~1</td><td>区分 voiced 与静音</td></tr>
+        <tr><td><code>pause_len</code></td><td>连续静音长度，1.5s 截断归一化</td><td>结尾停顿通常更长</td></tr>
+        <tr><td><code>energy_slope</code></td><td>最近 0.5s 能量斜率</td><td>自然收尾往往能量下降</td></tr>
+        <tr><td><code>speech_ratio_1s/3s</code></td><td>短/长窗口语音占比</td><td>描述局部停顿与整体语速</td></tr>
+        <tr><td><code>utt_speech_s</code></td><td>本轮累计语音时长</td><td>很短的片段通常不该抢答</td></tr>
+        <tr><td><code>n_inner_pauses</code></td><td>已出现停顿次数</td><td>反映犹豫和复杂表达</td></tr>
+        <tr><td><code>pre_pause_speech_s</code></td><td>停顿前语音段长度</td><td>短语音加长停顿更像思考</td></tr>
+        <tr><td><code>last_voiced_energy</code></td><td>最后语音帧能量</td><td>区分逐渐收尾与高能量急停</td></tr>
+        <tr><td><code>pre_pause_drop</code></td><td>尾部相对约 400 ms 前的下降量</td><td>是判定说完的重要先兆</td></tr>
+      </tbody></table>
+      <h3>网络与损失</h3>
+      <div class="formula">x ∈ R<sup>10</sup> → Linear(10,32) → ReLU → Linear(32,3) → {hold,take,backchannel}</div>
+      <p>训练用带类别权重的交叉熵。<code>take</code> 和 <code>backchannel</code> 的样本更少、漏判代价更高，所以权重为 2；<code>hold</code> 权重为 1。优化器 Adam，学习率 0.01，300 epochs，seed=42。</p>
+      <h3>为什么单帧预测后还要连续 4 帧确认</h3>
+      <p>句中停顿和句末停顿本来就重叠。只看一帧时，模型偶发把句中停顿判为 take；连续 4 个 100 ms 帧都支持 take 才开口，相当于用约 300 ms 额外等待换显著更低的抢话率。Pareto 结果从 1 帧的 24% 假开口降到 4 帧的 0%，中位接话延迟从 265 ms 增至 554 ms。</p>
+      <div class="callout warn"><strong>数据边界：</strong>训练集是参数化合成声学，不是大规模真人双人对话。模型证明了工程接口、损失和时序平滑有效；不能把 0% 假开口写成开放世界 SOTA。</div>
+    </section>
+
+    <section id="trustgate" data-search="TrustGate 证据 三态 execute clarify stop 风险 阈值">
+      <h2>06 · TrustGate：不用 LLM 做最后一道安全判断</h2>
+      <p>TrustGate 是确定性、可解释、低延迟的规则/统计门。它不调用另一个 LLM 来“投票”，因为实时安全分支需要稳定、可审计，而且 LLM 自己也会幻觉。LLM 负责自然回答；Gate 决定是否允许进入自由回答路径。</p>
+      <h3>核心量</h3>
+      <div class="formula">confidence = scale(avg_logprob) × uncertainty factor<br>risk ∈ {0, 0.4, 0.8}　　score = <b>risk × (1 − confidence)</b></div>
+      <p><code>scale(logprob)=1/(1+(-logprob))</code>。当前没有 intent probability 向量时，entropy 默认 0.5，且 <code>use_uncertainty=true</code>，因此置信度还会乘 0.75。风险由关键词上界决定：删除、转账等不可逆动作至少 0.4；转弯、变道、急刹等物理动作 0.8。</p>
+      <h3>实际决策顺序比 score 更重要</h3>
+      <table><thead><tr><th>优先级</th><th>条件</th><th>动作</th><th>理由</th></tr></thead><tbody>
+        <tr><td>1</td><td>文字含“那个/这个/你看着办”等省略目标表达</td><td><code>clarify</code></td><td>听清不等于说完整，独立处理语义含糊</td></tr>
+        <tr><td>2</td><td>confidence &lt; 0.45 且 risk &gt; 0</td><td><code>stop</code></td><td>高风险又没听清，宁停不猜</td></tr>
+        <tr><td>3</td><td>confidence &lt; 0.45 且无风险</td><td><code>clarify</code></td><td>核心库的保守兜底</td></tr>
+        <tr><td>4</td><td>risk ≥ 0.8</td><td><code>stop</code></td><td>物理危险动作不自动执行</td></tr>
+        <tr><td>5</td><td>0.4 ≤ risk &lt; 0.8</td><td><code>clarify</code></td><td>不可逆动作先二次确认</td></tr>
+        <tr><td>6</td><td>score ≥ 0.60 / 0.30</td><td><code>stop / clarify</code></td><td>风险与不确定性的连续区间</td></tr>
+        <tr><td>7</td><td>其余</td><td><code>execute</code></td><td>低风险、明确请求放行</td></tr>
+      </tbody></table>
+      <h3>为什么一开始 Demo 会“有动静就 clarify”</h3>
+      <p>Faster-Whisper 在短噪声或弱语音上会给低置信文字；核心 TrustGate 的低置信兜底会把它判成 clarify。实时集成层后来增加两条语音系统语义：</p>
+      <ul><li>没有可靠文字，或只有一个字符且置信很低：改为 <code>listen</code>，环境声不能触发固定追问。</li><li>只有“低风险 ASR 不确定”，且没有风险：改为 <code>execute</code>，让 MiniCPM-o 直接听原始音频，而不是让安全监视 ASR 接管正常聊天。</li></ul>
+      <div class="callout"><strong>关键设计：</strong>ASR 是 safety monitor，不是 conversational recognizer。它擅长给 Gate 提供可审计文本证据，但低风险对话仍由多模态基座理解原始声音。</div>
+    </section>
+
+    <section id="asr" data-search="ASR Faster Whisper 新增 繁简 no speech confidence CPU int8">
+      <h2>07 · <span class="badge new">2.0 新增</span> ASR 安全转写链路</h2>
+      <p class="lead">是的，ASR 是后来新加的。没有它时，TrustGate 的离线脚本拿到的是人工准备的文本；真实 Demo 的麦克风波形无法直接进入关键词风险与含糊判断，因此所谓“在线可信护栏”并未闭环。</p>
+      <h3>为什么选 Faster-Whisper-small</h3>
+      <ul><li>它用 CTranslate2 推理，CPU int8 可运行，把 32GB GPU 留给 9B speech-to-speech 基座。</li><li>small 的中文准确性、速度和 464MB 存储体积适合安全监视器。</li><li>提供 <code>avg_logprob</code> 与 <code>no_speech_prob</code>，能构造可解释置信度。</li></ul>
+      <h3>代码中的完整处理</h3>
+      <pre><code>segments = whisper.transcribe(
+    audio, language="zh", beam_size=1,
+    vad_filter=True, condition_on_previous_text=False
+)
+text = OpenCC("t2s").convert(join(segment.text))
+avg_logprob = duration_weighted_mean(segment.avg_logprob)
+no_speech = duration_weighted_mean(segment.no_speech_prob)
+asr_confidence = exp(avg_logprob) * (1 - no_speech)</code></pre>
+      <p>繁体转简体非常重要，因为 Gate 的关键词表是简体。如果 ASR 输出“刪除”，而风险词只有“删除”，不归一化就会漏报。数字归一化目前没有加入 Gate 的风险匹配，因为现有风险词不依赖数值格式；如果以后做转账金额或药物剂量，则应增加中文数字、阿拉伯数字与单位归一化。</p>
+      <h3>12 秒滚动窗口与水位线</h3>
+      <p>控制器只保留最近 12 秒波形，避免长会话无限增长。每次 Gate 放行后记录已处理的 voiced-frame 数；只有出现新语音帧才再次评估。若是噪声 pseudo-turn，则同时清空 TurnController 和 TrustGate 缓冲。</p>
+      <div class="callout red"><strong>不要误解：</strong>Whisper 的 VAD 并不是系统的唯一 VAD。浏览器本地 VAD用于打断；语轮 MLP 内部用能量阈值统计 voiced/silence；Faster-Whisper 的 VAD filter 只用于 ASR 分段。三者目标不同。</div>
+    </section>
+
+    <section id="grpo" data-search="GRPO LoRA reward loss group KL DPO RL 训练 数据">
+      <h2>08 · GRPO、LoRA 与在线加载：训练闭环到底做了什么</h2>
+      <h3>为什么用 GRPO</h3>
+      <p>同一个输入没有唯一正确回答，但可以判断哪条更安全、更忠实。GRPO 对一个 prompt 一次采样 G 条回答，以组内均值和方差计算相对优势，不需要单独训练 value critic，适合小规模验证。</p>
+      <div class="formula">A<sub>i</sub> = (r<sub>i</sub> − mean(r)) / (std(r) + 10<sup>−8</sup>)</div>
+      <h3>两类训练数据</h3>
+      <table><thead><tr><th>族</th><th>样本</th><th>优化目标</th><th>reward</th></tr></thead><tbody>
+        <tr><td>安全/语轮回复</td><td>300 条，execute/clarify/stop 五类场景</td><td>生成动作符合 Gate，内容与参考一致</td><td>归一化 BLEU-1 + 动作分类一致</td></tr>
+        <tr><td>barge-in 上下文</td><td>60 条，5主题×3截断点×4插话表达</td><td>只复述被打断前已经说出的内容，不编造未播部分</td><td>字符 bigram Jaccard + BLEU-1</td></tr>
+      </tbody></table>
+      <h3>reward 公式</h3>
+      <div class="formula">r<sub>gate</sub> = [1.0·content_consistency + 0.7·action_match] / 1.7</div>
+      <div class="formula">r<sub>barge</sub> = [1.0·bigram_Jaccard(generated, interrupted) + 0.5·content_consistency] / 1.5</div>
+      <p>Jaccard 的分母是并集，因此添加未播出的幻觉内容会增大分母、降低分数。训练和 63 号探针评测调用同一个 <code>bigram_overlap</code>，避免“训练优化 A、汇报指标 B”。</p>
+      <h3>最小可微 GRPO loss</h3>
+      <div class="formula">L = − mean(A<sub>i</sub> · log π<sub>θ</sub>(y<sub>i</sub>|x)) + β · mean(log π<sub>θ</sub> − log π<sub>ref</sub>)</div>
+      <p>生成阶段使用 <code>do_sample=true, top_p=0.9</code> 得到组内回答；训练阶段把 prompt 与生成 token 拼接，逐 token gather log-softmax，只对生成区域求和。为了避免 151k 词表的整批 float32 log-softmax 在 32GB 卡上 OOM，代码按样本逐行转换和计算，峰值从约 1.2GB 降到约 75MB。</p>
+      <h3>KL 参照没有额外复制一个 9B 模型</h3>
+      <p>LoRA 模式下，<code>disable_adapter()</code> 就得到冻结基座的 log-prob，因此不需要再加载一份 9B reference model。β=0.1 的项约束更新不要偏离基座太远。这里的实现是线性 log-prob 差近似锚，不等同于完整 token-level KL 期望，文档与代码都不把它夸成标准 TRL 全功能实现。</p>
+      <h3>LoRA 参数与部署</h3>
+      <p><code>r=16, alpha=32, dropout=0.05</code>，目标为所有 linear 层，包括 q/k/v/o 和 MLP up/down/gate projection。训练保存 PEFT adapter；服务启动时调用内部 <code>model.llm.load_adapter()</code> 并 <code>set_adapter()</code>，不替换 MiniCPM-o 外层多模态类。</p>
+      <div class="callout warn"><strong>结果不能只挑正数：</strong>Qwen2.5-1.5B 的 context recall 0.301→0.484，学习信号清楚；MiniCPM-o 9B 的轻量训练多数配置退化，最佳 20-step 配置 reward +0.015 也接近采样噪声。2.0 在线加载的是这份最温和的 9B adapter，但发布保留全部负结果。</div>
+    </section>
+
+    <section id="bargein" data-search="barge in 打断 AEC client VAD force listen listen reason">
+      <h2>09 · <span class="badge new">2.0 强化</span> 打断：为什么必须“客户端先停，服务器再追”</h2>
+      <p>旧链路要等当前采集块封口、上传、服务器处理、下行确认，然后浏览器才停止排队语音。公网 RTT 和模型时间叠加后，“说停”可能几秒才生效。2.0 将听感和状态同步拆开：</p>
+      <ol><li>浏览器在 Agent 播放期间检测到持续真人语音。</li><li>立即调用 <code>audioPlayer.stopAll()</code>，无需等服务器。</li><li>下一块上行只发送一次 <code>force_listen=true</code>，让服务器状态追上。</li><li>进入冷却窗口，防止同一次插话反复触发。</li></ol>
+      <h3>AEC 为什么重要</h3>
+      <p>扬声器播放的女声会被麦克风收到。如果没有 WebRTC AEC 或阈值太灵敏，本地 VAD 会把回声当成人声，造成“系统自己把自己打断”。所以浏览器采集必须打开 AEC，优先用耳机验证，并提供保守/均衡/灵敏三档阈值。</p>
+      <h3>listen 消息为什么要带 reason</h3>
+      <p>服务端的 listen 有三种完全不同的语义：<code>turn_end</code> 是正常答完；<code>model_listen</code> 是模型主动继续听；<code>force_listen</code> 才是强制打断。旧前端见到 listen 就清空播放器，正常轮次尾音也会被截掉，听起来像卡顿。2.0 只在真正打断原因下清空。</p>
+    </section>
+
+    <section id="voice" data-search="男声 女声 统一 护栏 clarify stop">
+      <h2>10 · <span class="badge new">2.0 新增</span> 护栏语音统一</h2>
+      <p>正常回答走 MiniCPM-o 的女声音色，而早期 clarify/stop 使用离线生成的男声 WAV，用户会明显感到“换了一个人”。2.0 重新生成并替换两段确定性护栏语音，保持和正常对话一致的女声风格。</p>
+      <table><thead><tr><th>动作</th><th>固定话术</th><th>原因</th></tr></thead><tbody>
+        <tr><td><code>clarify</code></td><td>为了避免误操作，我需要再确认一下。请把对象和具体操作说清楚。</td><td>确定性表达，防止自由生成反而执行</td></tr>
+        <tr><td><code>stop</code></td><td>这个指令可能带来安全风险，我现在不会执行。请先确认安全条件。</td><td>明确拒绝，不给危险动作模糊空间</td></tr>
+      </tbody></table>
+      <p>服务器读取 WAV 后转单声道、必要时重采样到 24 kHz，再编码为 Float32 Base64，下行路径和正常音频一致。缓存避免每次磁盘读取。</p>
+    </section>
+
+    <section id="latency" data-search="延迟 torch compile TTS 4080 buffer jitter 700 ms 性能">
+      <h2>11 · <span class="badge new">2.0 新增</span> 实时性优化与为什么不是单纯换显卡</h2>
+      <h3>瓶颈分解</h3>
+      <div class="grid three">
+        <div class="card"><div class="metric">模型</div><p>每个约 1 秒输出单元若推理超过 1 秒，音频余量会持续减少。</p></div>
+        <div class="card"><div class="metric">网络</div><p>Gradio 中继曾把约 0.7 秒生成放大到 2.3~4.2 秒墙钟；SSH 直连恢复到 1 秒内。</p></div>
+        <div class="card"><div class="metric">播放器</div><p>缓冲太小会断粮，太大会让首次开口变慢。localhost 当前默认 700 ms。</p></div>
+      </div>
+      <h3>为什么“LoRA 加载后再 compile”</h3>
+      <p>如果先编译基座再动态挂 adapter，图捕获可能绕开或破坏可训练分支。2.0 检测到 <code>TFD_GRPO_ADAPTER</code> 后，先 eager 加载模型和 adapter，再选择性 compile。完整 LLM 图在本次 4080 32GB 环境编译超过 12 分钟，收益与风险不匹配；默认只编译 TTS model，首次 warm-up 132.6 秒，之后复用缓存。</p>
+      <h3>实测变化</h3>
+      <table><thead><tr><th>阶段</th><th>后端</th><th>客户端观察</th><th>解释</th></tr></thead><tbody>
+        <tr><td>早期 1s 片</td><td>median 约 1.36s，RTF 1.42</td><td>Ahead 容易变红</td><td>无法持续实时</td></tr>
+        <tr><td>2.0 最新短探针</td><td>median 0.742s / mean 0.794s</td><td>median 0.824s / mean 0.897s</td><td>恢复到每片 1 秒预算内</td></tr>
+      </tbody></table>
+      <div class="callout"><strong>显卡结论：</strong>4080 SUPER 32GB 的热态推理可以低于实时线。80GB 只解决容量，不自动解决公网 RTT、协议误打断或播放缓冲。只有直连下 Infer p90 长期高于 1000 ms，或增加视频/并发，升级 H100/H800 才更有依据。</div>
+    </section>
+
+    <section id="metrics" data-search="指标 state SID mode chunks KV infer TTFS PDelay ahead shift drift">
+      <h2>12 · Demo 面板上的指标到底是什么</h2>
+      <table><thead><tr><th>指标</th><th>定义</th><th>怎么看</th></tr></thead><tbody>
+        <tr><td>State</td><td>连接生命周期：Idle / Connecting / Running / Paused</td><td>不是模型思考状态</td></tr>
+        <tr><td>SID</td><td>会话 ID</td><td>用它把浏览器现象和服务端日志对上</td></tr>
+        <tr><td>Mode</td><td>模型当前 listen 或 speak</td><td>频繁抖动要查语轮和 force_listen</td></tr>
+        <tr><td>Chunks</td><td>已处理的流式单元数</td><td>不等于文本 token 数</td></tr>
+        <tr><td>KV</td><td>KV cache 中的上下文占用</td><td>不是 GPU utilization</td></tr>
+        <tr><td>Infer</td><td>服务器处理一个单元的推理时间</td><td>语音片低于 1000ms 才有持续余量</td></tr>
+        <tr><td>TTFS</td><td>进入聆听后到首次选择说话</td><td>不包含全部浏览器缓冲</td></tr>
+        <tr><td>PDelay</td><td>首块到达后主动预存的播放缓冲</td><td>大更稳，但首次开口更慢</td></tr>
+        <tr><td>Ahead</td><td>已经排队但还未播放的音频时长</td><td>接近 0/红色表示即将断粮</td></tr>
+        <tr><td>Shift</td><td>初始缓冲与播放断点累计平移</td><td>不是单次网络延迟</td></tr>
+        <tr><td>Drift</td><td>当前到达相对首块的延迟变化</td><td>持续增加说明链路越来越落后</td></tr>
+        <tr><td>Gate</td><td>ASR 文本、置信度、风险、action</td><td>确认自研 TrustGate 确实参与</td></tr>
+        <tr><td>Turn</td><td>hold/take/backchannel 概率与帧计数</td><td>确认 MLP 权重确实加载</td></tr>
+      </tbody></table>
+    </section>
+
+    <section id="evidence" data-search="结果 实验 benchmark negative 评测 96.5 0.484">
+      <h2>13 · 结果总览：哪些是完整链路，哪些只是机制证据</h2>
+      <table><thead><tr><th>实验</th><th>结果</th><th>证据等级</th></tr></thead><tbody>
+        <tr><td>Turn MLP 帧分类</td><td>val accuracy 96.46%；hold/take/back recall 96.5/97.9/82.6%</td><td><span class="badge truth">合成数据 hold-out</span></td></tr>
+        <tr><td>事件级语轮</td><td>4帧确认：假开口 0%，漏接 0%，median 553.9ms</td><td><span class="badge truth">合成场景</span></td></tr>
+        <tr><td>barge-in 机制</td><td>100/200/500ms TTS chunk 总延迟 300/400/566.7ms</td><td><span class="badge truth">本地机制评测</span></td></tr>
+        <tr><td>真基座打断</td><td>用户插话后截断，新轮 TTFT 865ms；延迟打断探针 overlap 0→0.089</td><td><span class="badge truth">GPU 完整链路</span></td></tr>
+        <tr><td>GRPO 1.5B</td><td>context recall 0.301→0.484，reward +0.156</td><td><span class="badge truth">真实梯度 LoRA</span></td></tr>
+        <tr><td>GRPO 9B</td><td>最温和配置 +0.015；多数组合负增益，pre-eval 噪声约 ±0.08</td><td><span class="badge truth">真实梯度，结论保守</span></td></tr>
+        <tr><td>2.0 在线组件</td><td>GRPO adapter、MLP、ASR/TrustGate 在 backend 日志确认加载</td><td><span class="badge new">在线接线完成</span></td></tr>
+        <tr><td>2.0 实时探针</td><td>backend median 0.742s；client median 0.824s</td><td><span class="badge new">短时单会话</span></td></tr>
+      </tbody></table>
+      <p class="muted">“完整链路”表示真实模型、真实 adapter、真实服务器和音频协议跑通；不等于已经通过大规模用户研究或生产 SLO。README 与模型卡会保持相同口径。</p>
+    </section>
+
+    <section id="data" data-search="数据集 jsonl frame npz wav 训练样本">
+      <h2>14 · 数据集长什么样</h2>
+      <h3>安全/动作 GRPO JSONL</h3>
+      <pre><code>{
+  "family": "safety_critical",
+  "instruction": "现在就右转然后变道",
+  "response": "这个操作有安全风险，我不能执行。",
+  "gate_expected": "stop",
+  "turn_timing_ms": 420.0,
+  "barge_in_regroup_ms": 800.0
+}</code></pre>
+      <h3>打断回忆 GRPO JSONL</h3>
+      <pre><code>{
+  "family": "barge_in_context",
+  "messages": [
+    {"role":"user","content":"介绍一下你的功能"},
+    {"role":"assistant","content":"我能陪你聊天，还能..."},
+    {"role":"user","content":"停，刚才说到哪了？"}
+  ],
+  "interrupted_content": "我能陪你聊天，还能...",
+  "response": "我刚才说到能陪你聊天。"
+}</code></pre>
+      <h3>语轮帧数据</h3>
+      <p><code>frames.npz</code> 保存特征矩阵与 hold/take/backchannel 标签；训练 500 条、验证 150 条话语，训练帧 18,190，标签分布 hold 13,446 / take 4,228 / backchannel 516。原始段由 speech、pause、filler_pause、final_pause 参数化生成，音频和标签可用固定种子重建。</p>
+      <h3>真实音频证据</h3>
+      <p><code>data/user_turns</code> 与 <code>outputs/duplex_session</code> 保存五个 Gate 场景、barge-in 的 stop/probe 语音、被截断输出和 JSON 报告。它们用于端到端接线和 A/B 归因，不与合成 MLP 训练集混为一谈。</p>
+    </section>
+
+    <section id="code" data-search="代码 文件 路径 map">
+      <h2>15 · 代码地图：从哪里开始读</h2>
+      <ol class="code-map">
+        <li><code>src/tfd/turntaking/features.py</code><br><span class="tag">READ 1</span> 10维因果特征</li>
+        <li><code>src/tfd/turntaking/predictor.py</code><br><span class="tag">READ 2</span> MLP、确认平滑、评测</li>
+        <li><code>src/tfd/gate/features.py</code><br><span class="tag">READ 3</span> confidence/risk/ambiguity</li>
+        <li><code>src/tfd/gate/trust_gate.py</code><br><span class="tag">READ 4</span> 三态决策树</li>
+        <li><code>src/tfd/rl/grpo_trainer.py</code><br><span class="tag">READ 5</span> reward、采样、logp、KL</li>
+        <li><code>scripts/32_run_grpo.py</code><br><span class="tag">READ 6</span> 数据到 checkpoint 的入口</li>
+        <li><code>integrations/.../py_backend/tfd_runtime.py</code><br><span class="tag">READ 7</span> adapter/MLP/ASR 装配</li>
+        <li><code>integrations/.../py_backend/server.py</code><br><span class="tag">READ 8</span> 真实在线决策点</li>
+        <li><code>integrations/.../realtime-session.js</code><br><span class="tag">READ 9</span> 即时打断与 listen reason</li>
+        <li><code>integrations/.../audio-duplex-app.js</code><br><span class="tag">READ 10</span> 设备、AEC、VAD、buffer</li>
+      </ol>
+      <div class="callout">学习时不要从 9B 模型源码开始。先理解自研的三个决策接口，再顺着 <code>server.py</code> 看它们如何影响基座调用，最后再看 MiniCPM-o 内部 listen/speak 与 token2wav。</div>
+    </section>
+
+    <section id="reproduce" data-search="复现 安装 测试 AutoDL deploy env GitHub HuggingFace">
+      <h2>16 · 从零复现的最短可靠路径</h2>
+      <h3>A. 无 GPU 验证研究层</h3>
+      <pre><code>git clone https://github.com/Jatshi/trusted-full-duplex-agent.git
+cd trusted-full-duplex-agent
+pip install -r requirements_minicpmo.txt
+python scripts/60_turntaking_train.py
+python scripts/61_turntaking_eval.py
+python scripts/64_gate_incremental.py
+python -m pytest tests -q</code></pre>
+      <h3>B. 获取 2.0 自研权重</h3>
+      <pre><code>hf download jatshi/trusted-full-duplex-agent \
+  --include "v2.0/*" --local-dir ./hf-assets</code></pre>
+      <h3>C. 装配真实 Demo</h3>
+      <pre><code>git clone https://github.com/OpenBMB/MiniCPM-o-Demo.git
+cp -a integrations/minicpmo45-demo/overlay/. MiniCPM-o-Demo/
+cp integrations/minicpmo45-demo/tfd-runtime.env.example /secure/path/tfd.env
+# 编辑路径后：set -a; . /secure/path/tfd.env; set +a
+# 再按对应 upstream revision 的方式启动 backend、worker、gateway</code></pre>
+      <h3>D. 发布前 Gate</h3>
+      <pre><code>python -m pytest tests/test_tfd_runtime.py -q
+npx vitest run tests/js/audio-duplex-branding-contract.test.js \
+  tests/js/backend-compile-keepalive-contract.test.js \
+  tests/js/realtime-bargein-contract.test.js</code></pre>
+      <p>启动日志必须同时出现 adapter active、turn MLP enabled、Loading TFD ASR、TrustGate enabled。少任何一个都不能称为完整 2.0。</p>
+    </section>
+
+    <section id="debug" data-search="踩坑 debug 问题 解决 OOM 卡顿 clarify 男声 compile">
+      <h2>17 · 这次真正踩过的坑，以及如何解释</h2>
+      <details open><summary>坑 1：Demo 看起来能聊，其实自研组件没接上</summary><div><p><strong>症状：</strong>页面能全双工对话，但只是上游 duplex 能力。<strong>根因：</strong>LoRA、MLP 和 Gate 是不同仓库/脚本，没有 runtime 装配。<strong>解决：</strong>新增 <code>tfd_runtime.py</code>，所有组件由环境变量显式启用，并把状态放进 metrics 与日志。</p></div></details>
+      <details><summary>坑 2：任何声音都进入 clarify</summary><div><p><strong>症状：</strong>环境声和普通问句都播放固定追问。<strong>根因：</strong>短窗 ASR 低置信被核心 Gate 的保守兜底拦截。<strong>解决：</strong>空/极短低置信文本映射为 listen；低风险 ASR 不确定交给原始音频基座；含糊和风险仍拦截。</p></div></details>
+      <details><summary>坑 3：沉默时重复识别旧话</summary><div><p><strong>根因：</strong>滚动 ASR buffer 保留旧音频，而每次 take 条件重新出现都评估同一内容。<strong>解决：</strong>voiced-frame watermark，只在新语音到来后重评；噪声 pseudo-turn 清空状态。</p></div></details>
+      <details><summary>坑 4：系统自己打断自己</summary><div><p><strong>根因：</strong>前端把正常 <code>turn_end</code> 的 listen 当作 barge-in，清掉未播放尾音；扬声器回声又可能触发本地 VAD。<strong>解决：</strong>listen reason 协议 + AEC + 播放期间限定 VAD + 冷却。</p></div></details>
+      <details><summary>坑 5：LoRA 与 torch.compile 顺序冲突</summary><div><p><strong>根因：</strong>编译图和动态 adapter 的执行路径不一致。完整 LLM 编译又耗时超过 12 分钟。<strong>解决：</strong>先加载 adapter，再编译；默认只编译 TTS，LLM compile 作为显式实验开关。</p></div></details>
+      <details><summary>坑 6：9B GRPO 可微 log-softmax OOM</summary><div><p><strong>根因：</strong>批量 float32 logits 形状约为 B×L×151k，峰值过大。<strong>解决：</strong>保持 logits，逐行做 float32 log-softmax 与 gather，单行峰值约 75MB；采样后释放 KV cache 碎片。</p></div></details>
+      <details><summary>坑 7：更大显存不等于更低交互延迟</summary><div><p><strong>证据：</strong>服务器内热态小于 1 秒，而公网中继达到 2~4 秒；改走 SSH 直连后恢复。<strong>结论：</strong>先分解 model time、network wall time 与 playback delay，再决定是否换卡。</p></div></details>
+    </section>
+
+    <section id="limits" data-search="限制 边界 production 未完成">
+      <h2>18 · 诚实边界与下一版应该做什么</h2>
+      <ul>
+        <li><strong>GRPO 数据规模小：</strong>60/300 条适合闭环验证，不足以证明通用安全对齐。</li>
+        <li><strong>9B 增益不稳：</strong>当前在线 adapter 是可运行的研究产物，不应宣称显著提升所有语音任务。</li>
+        <li><strong>MLP 合成域：</strong>需要 Switchboard、CallHome 或自采真人双人语音做域外验证与再训练。</li>
+        <li><strong>TrustGate 词表有限：</strong>生产系统需要意图分类器、实体完整性、用户确认状态机和审计日志。</li>
+        <li><strong>传输仍是 WebSocket Float32：</strong>未来可独立做 PCM16/Opus 和 WebRTC，但不能只把 chunk 参数从 1s 改 250ms 就宣称模型粒度变小。</li>
+        <li><strong>单会话验证：</strong>缺并发、长稳、网络丢包、浏览器矩阵和端到端 SLO。</li>
+      </ul>
+      <h3>最有价值的 2.1 路线</h3>
+      <p>收集带真人 EOT、重叠语音与回声条件的对话集，重新训练 MLP；把 TrustGate 的风险实体和确认状态机结构化；为 ASR 与 base audio understanding 做双路一致性校准；建立 30 分钟长稳探针、p50/p90/p99 与 false interrupt 统一 benchmark。</p>
+    </section>
+
+    <section id="interview" data-search="面试 问答 为什么 GRPO ASR MLP Gate">
+      <h2>19 · 高频面试问答</h2>
+      <details open><summary>Q1：你这个和 MiniCPM-o 官方 Demo 有什么区别？</summary><div><p>官方 Demo 提供基座和服务骨架；我做的是可训练的语轮决策、ASR 驱动的三态 TrustGate、GRPO adapter 训练与部署、客户端即时打断、协议 reason 修复、指标与完整测试。2.0 的重点是把这些自研组件真正接入在线链路，并保留基座/自研归属。</p></div></details>
+      <details><summary>Q2：为什么 Gate 不直接让 LLM 判断？</summary><div><p>最后一道安全门需要低延迟、确定性和可审计。LLM 可以辅助上游意图抽取，但最终阈值、不可逆动作 floor 和停止策略最好是显式状态机。这样同一输入能复现，也能做单元测试。</p></div></details>
+      <details><summary>Q3：GRPO 为什么不用 critic？</summary><div><p>同一 prompt 的 G 个候选天然形成相对比较。reward 标准化后得到组内优势，不必拟合 value model，降低小规模实验复杂度。但代价是组内 reward 方差不足时没有学习信号，所以报告里统计了 signal_steps。</p></div></details>
+      <details><summary>Q4：为什么 1.5B 变好，9B 反而退化？</summary><div><p>强基座在 text-context recall 上接近天花板，小数据和 group=4 的 reward 信号不足；采样噪声大，KL=0.1 也未完全锚住策略。更关键的是线上失败主要是 audio-token 自我回忆，而训练是 text-context，存在模态 gap。</p></div></details>
+      <details><summary>Q5：ASR 和 MiniCPM-o 都能听语音，为什么重复？</summary><div><p>角色不同。MiniCPM-o 为自然对话理解原始音频；Faster-Whisper 是可审计的安全传感器，产出文字、logprob 与 no-speech 概率供 Gate。低风险不确定会退回基座，不让 ASR 劫持对话。</p></div></details>
+      <details><summary>Q6：如何证明 Demo 不是开关造假？</summary><div><p>启动日志确认 adapter、MLP、ASR/Gate 分别加载；每个下行 chunk metrics 含 turn 概率和 gate action；设置环境变量可做同一服务的 baseline/增强 A/B；Python 与 JS 契约测试覆盖装配与协议。</p></div></details>
+      <details><summary>Q7：最棘手的问题是什么？</summary><div><p>不是模型 forward，而是三个时间尺度互相干扰：100ms 语轮帧、约1s模型单元、数百毫秒网络/播放器缓冲。最终用客户端即时环解决听感，用服务器可信环解决状态一致性，再用 reason 与 watermarks 避免重复事件。</p></div></details>
+    </section>
+
+    <section id="exercises" data-search="学习 掌握 checklist 练习">
+      <h2>20 · “我真的会了”的检查清单</h2>
+      <ul class="checklist">
+        <li>不看文档画出 Browser → Gateway → Worker → Backend → Base 的链路。</li>
+        <li>解释 10 个语轮特征中至少 6 个，并说明为什么必须 4 帧确认。</li>
+        <li>手算 risk=0.8、confidence=0.6 时的 score，并指出 risk floor 会先于 score 生效。</li>
+        <li>写出 GRPO 组内优势和 loss，解释 LoRA 下 reference 如何零额外模型完成。</li>
+        <li>说明 bigram Jaccard 为什么能惩罚“编造未播内容”。</li>
+        <li>解释 ASR 的 <code>avg_logprob</code>、<code>no_speech_prob</code> 与 OpenCC 分别做什么。</li>
+        <li>说明为什么空 ASR 应该 listen，而低风险低置信可以 defer to base。</li>
+        <li>解释 <code>turn_end</code> 和 <code>force_listen</code> 对播放器的不同影响。</li>
+        <li>能用日志区分 model time、network wall time 和 playback buffer。</li>
+        <li>主动说出 9B GRPO 负结果、MLP 合成域和单会话 benchmark 三个限制。</li>
+      </ul>
+    </section>
+
+    <section id="glossary" data-search="术语 glossary">
+      <h2>21 · 术语速查</h2>
+      <div class="grid">
+        <div class="card"><h3>Prefill</h3><p>把新输入编码并写入当前会话状态/KV 的阶段。</p></div>
+        <div class="card"><h3>KV cache</h3><p>Transformer 保存历史 key/value，避免每次重算全部上下文。</p></div>
+        <div class="card"><h3>Barge-in</h3><p>智能体说话期间用户插话，并要求系统立即让行。</p></div>
+        <div class="card"><h3>Backchannel</h3><p>“嗯、明白”一类不抢走话轮的短反馈。</p></div>
+        <div class="card"><h3>LoRA</h3><p>冻结基座，仅训练低秩增量矩阵，降低显存和存储成本。</p></div>
+        <div class="card"><h3>GRPO</h3><p>按同一 prompt 的组内 reward 计算相对优势的策略优化。</p></div>
+        <div class="card"><h3>AEC</h3><p>Acoustic Echo Cancellation，消除扬声器回灌到麦克风的声音。</p></div>
+        <div class="card"><h3>RTF</h3><p>Real-Time Factor，处理时长/音频时长；持续实时需要小于 1。</p></div>
+      </div>
+    </section>
+
+    <footer>
+      <p>TFD-STAR 2.0 深度学习手册 · 根据仓库代码、配置、训练报告和 2026-09-19 实机日志整理。基座能力与项目贡献已分开标注。</p>
+      <p><a href="#top">返回顶部</a> · <a href="../README.md">README</a> · <a href="V2_ARCHITECTURE_AND_RESULTS.md">证据摘要</a></p>
+    </footer>
+  </main>
+</div>
+<script>
+  const input=document.getElementById('search');
+  const sections=[...document.querySelectorAll('main section')];
+  const links=[...document.querySelectorAll('#toc a')];
+  input.addEventListener('input',()=>{
+    const q=input.value.trim().toLowerCase();
+    sections.forEach(s=>{s.hidden=!!q&&!((s.dataset.search||'')+' '+s.textContent).toLowerCase().includes(q)});
+    links.forEach(a=>{const s=document.querySelector(a.getAttribute('href'));a.hidden=s?s.hidden:false});
+  });
+  const observer=new IntersectionObserver(entries=>{
+    entries.filter(e=>e.isIntersecting).forEach(e=>links.forEach(a=>a.classList.toggle('active',a.hash==='#'+e.target.id)));
+  },{rootMargin:'-15% 0px -70% 0px'});
+  sections.forEach(s=>observer.observe(s));
+</script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+{
+  "name": "TFD-STAR",
+  "version": "2.0.0",
+  "release_date": "2026-09-19",
+  "github": "https://github.com/Jatshi/trusted-full-duplex-agent",
+  "huggingface_model": "https://huggingface.co/jatshi/trusted-full-duplex-agent",
+  "huggingface_dataset": "https://huggingface.co/datasets/jatshi/trusted-full-duplex-agent-data",
+  "artifacts": {
+    "source": [
+      "src/tfd",
+      "scripts",
+      "configs",
+      "integrations/minicpmo45-demo"
+    ],
+    "learning_manual": "docs/TFD_STAR_2.0_全双工可信语音智能体_深度学习手册.html",
+    "deployed_adapter": "v2.0/minicpmo9b-grpo-lora",
+    "turn_controller": "v2.0/turn-taking-mlp/learned_mlp.pt",
+    "guardrail_voice": "v2.0/guardrail-voice"
+  },
+  "excluded_third_party_weights": [
+    "openbmb/MiniCPM-o-4_5",
+    "Qwen/Qwen2.5-1.5B-Instruct",
+    "Systran/faster-whisper-small"
+  ],
+  "evidence_boundary": {
+    "turn_mlp": "parameterized synthetic hold-out",
+    "grpo_9b": "small selected-run delta near sampling noise; negative sweeps retained",
+    "runtime": "single-session RTX 4080 SUPER 32GB short probe"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "release": "2.0.0",
+  "date": "2026-09-19",
+  "hardware": "NVIDIA GeForce RTX 4080 SUPER 32GB",
+  "sessions": 1,
+  "transport": "browser localhost -> SSH tunnel -> remote gateway",
+  "compile": {
+    "scope": "tts_only_after_grpo_adapter",
+    "warmup_seconds": 132.6,
+    "llm_compile_default": false,
+    "llm_compile_note": "full LoRA LLM compilation exceeded 12 minutes and was disabled"
+  },
+  "latest_short_probe": {
+    "backend_seconds": {"median": 0.742, "mean": 0.794},
+    "client_seconds": {"median": 0.824, "mean": 0.897}
+  },
+  "runtime_components": {
+    "grpo_adapter": "outputs/rl_ckpt_minicpmo9b_lr1e5",
+    "turn_mlp": "outputs/turntaking/learned_mlp.pt",
+    "asr": "faster-whisper-small cpu int8",
+    "asr_window_seconds": 12,
+    "local_playback_buffer_ms": 700
+  },
+  "scope_note": "Short single-session release probe; not a production concurrency or long-soak benchmark."
+}

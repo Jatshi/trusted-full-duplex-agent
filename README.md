@@ -1,126 +1,262 @@
-# Trusted Full-Duplex Speech Agent（可信全双工语音智能体）
+<p align="center">
+  <img src="docs/assets/tfd-star-hero.svg" width="100%" alt="TFD-STAR 2.0 banner">
+</p>
 
-在开源全双工基座（MiniCPM-o 4.5）之上构建的**系统层全双工 + 可信护栏 + turn-taking 对齐**完整工程：
-流式三态护栏（execute/clarify/stop）、帧级 turn-taking 决策器、barge-in 打断处理、
-chunk 级增量风险决策、以及「发现弱点 → 构造数据 → GRPO 闭环 → 同口径评测」的 RL 训练闭环。
+<p align="center">
+  <a href="https://github.com/Jatshi/trusted-full-duplex-agent/releases/tag/v2.0.0"><img alt="release" src="https://img.shields.io/badge/release-v2.0.0-61e6db?style=flat-square"></a>
+  <a href="https://huggingface.co/jatshi/trusted-full-duplex-agent"><img alt="Hugging Face model" src="https://img.shields.io/badge/%F0%9F%A4%97-model%20%2B%20adapters-FFD21E?style=flat-square"></a>
+  <a href="https://huggingface.co/datasets/jatshi/trusted-full-duplex-agent-data"><img alt="Hugging Face data" src="https://img.shields.io/badge/%F0%9F%A4%97-evidence%20dataset-FFD21E?style=flat-square"></a>
+  <img alt="Python" src="https://img.shields.io/badge/Python-3.10-3776AB?style=flat-square&logo=python&logoColor=white">
+  <img alt="GPU validated" src="https://img.shields.io/badge/GPU-RTX%204080%20SUPER%2032GB-76B900?style=flat-square&logo=nvidia&logoColor=white">
+</p>
 
-> 一句话价值：让全双工语音不仅"流畅像人"，还会 **"该执行就执行、该澄清就澄清、该停就停"**，
-> 并且每个结论都有实测数字与归因实验支撑——包括负结果与噪声标定。
+<p align="center"><strong>可信全双工语音智能体</strong><br>
+会打断，会追问，会拒绝，也知道什么时候安静地继续听。</p>
+
+<p align="center">
+  <a href="#-60-秒看懂项目">60 秒看懂</a> ·
+  <a href="#-20-新增">2.0 新增</a> ·
+  <a href="#-实测结果">实测结果</a> ·
+  <a href="#-快速开始">快速开始</a> ·
+  <a href="docs/TFD_STAR_2.0_全双工可信语音智能体_深度学习手册.html">深度学习手册</a> ·
+  <a href="RELEASE_NOTES_v2.0.md">Release Notes</a>
+</p>
 
 ---
 
-## 实测结果一览（真机 GPU 验证）
+## 60 秒看懂项目
 
-| 能力 | 实测指标 | 验证方式 |
-|---|---|---|
-| **Turn-taking 决策器**（外部轻量分类器，200ms 帧） | 帧级准确率 96.5%，**假开口率 0%**，take 中位延迟 554ms | 训练/测试分离 + 规则基线（11.3% 假开口）与激进基线（39.3%）对照 |
-| **Barge-in 打断** | VAD 检测 300ms + chunk 边界停止 0~400ms；真基座截断后新轮 TTFT 865ms 不崩 | 机制层 + MiniCPM-o 9B 真基座双层验证 |
-| **流式护栏增量决策** | 风险预警提前量均值 **550ms**（澄清话术预取），关键帧误执行 **0** | 300ms chunk 级增量 vs 整句基线一致性 4/4 |
-| **RL 训练闭环**（barge-in 上下文保持） | 1.5B：context_recall 0.301→0.484（**+0.184**）；9B 负结果 + 评测噪声标定 ±0.08 | GRPO 真梯度，reward 与探针评测同口径（bigram Jaccard） |
-| **A/B 归因实验** | 推迟打断 500ms→5000ms：探针 bigram 0.0→0.089，证实「截断时机 + 近因偏置」双因素 | 主动设计实验回答自身系统的弱点 |
+TFD-STAR 以 [MiniCPM-o 4.5](https://huggingface.co/openbmb/MiniCPM-o-4_5)
+作为 speech-to-speech 基座，在真实浏览器、WebSocket、Gateway、Worker 与
+GPU backend 链路中加入三层项目能力：
 
-所有数字的生成入口、复现命令与原始 JSON 报告见 **[MANIFEST.md](MANIFEST.md)**。
+1. **语轮决策层**：10 维流式声学特征 → 10-32-3 MLP →
+   `hold / take / backchannel`，决定什么时候允许基座开口。
+2. **可信控制层**：ASR 安全转写 → TrustGate →
+   `execute / clarify / stop`，决定是否放行自由回答。
+3. **后训练层**：GRPO + PEFT LoRA，用组内相对 reward 对齐安全动作与
+   barge-in 后的上下文回忆。
+
+2.0 不再是离线组件拼图：GRPO adapter、真实 MLP 权重、Faster-Whisper 与
+TrustGate 已经接入同一实时 Demo，并用日志、metrics 和测试证明它们确实运行。
+
+> **能力归属**：MiniCPM-o 负责多模态理解、listen/speak token、TTS 与
+> token2wav；本项目负责时机决策、可信门控、GRPO 数据/训练、实时集成、
+> 打断协议、评测与工程优化。两者在文档中始终分开标注。
 
 ## 系统架构
 
-```
-用户语音流 ──┬─→ [Turn-taking 决策器] 200ms 帧级 hold/take/backchannel
-             │        ↓ take
-             ├─→ [流式护栏] chunk 级增量风险决策（risk latch + 提前预警）
-             │        ↓ execute/clarify/stop
-             └─→ [MiniCPM-o 4.5] streaming_prefill / streaming_generate
-                      ↓ 流式播报（可中断）
-             [EnergyVAD] 检测用户抢话 → 截断生成 → 打断事件入上下文
-                      ↓
-             [RL 对齐层] GRPO：turn-taking 时机 + barge-in 上下文保持 reward
+```mermaid
+flowchart LR
+  Mic[Browser microphone<br/>AEC · NS · AGC] --> CVAD[Client VAD<br/>immediate stopAll]
+  CVAD --> GW[Gateway / WebSocket]
+  GW --> WK[Worker]
+  WK --> BE[Python Backend]
+  BE --> MLP[Turn MLP<br/>hold · take · backchannel]
+  MLP --> ASR[Faster-Whisper<br/>safety transcript]
+  ASR --> Gate[TrustGate<br/>execute · clarify · stop]
+  Gate -->|execute| Base[MiniCPM-o 4.5<br/>prefill · generate]
+  Gate -->|clarify / stop| Fixed[Deterministic guardrail voice]
+  Base --> Play[24 kHz streaming playback]
+  Fixed --> Play
+  Train[GRPO groups + rewards] -. PEFT LoRA .-> Base
 ```
 
-| 模块 | 位置 | 说明 |
+## 2.0 新增
+
+| 模块 | 2.0 做了什么 | 对应代码 |
 |---|---|---|
-| 基座抽象 | `src/tfd/base/backends.py` | MiniCPM-o 流式接口（streaming_prefill / streaming_generate / duplex_server） |
-| 流式护栏 | `src/tfd/gate/` | 三态门控、风险 latch、chunk 级增量决策 |
-| Turn-taking | `src/tfd/turntaking/` | 帧级决策器训练（MLP）+ 学习型/规则/激进三策略对比 + barge-in VAD |
-| RL 对齐 | `src/tfd/rl/` | GRPO trainer（可微 logp + 组内优势 + KL 锚）、turn-taking 与 barge-in context reward |
-| 评测 | `src/tfd/eval/` | 假开口率/打断延迟/风险提前量/内容一致性等全双工自定义指标 |
+| **真实 ASR 安全链路** | Faster-Whisper-small CPU int8、中文繁简归一化、logprob/no-speech confidence、12s rolling window | `integrations/.../py_backend/tfd_runtime.py` |
+| **在线语轮 MLP** | 100ms 帧、真实权重、四帧确认、voiced/silence 约束、实时概率 metrics | 同上 |
+| **在线 GRPO LoRA** | adapter 挂入内部 `model.llm`，可与 baseline 显式切换 | `core/processors/pytorch_backend.py` overlay |
+| **TrustGate 真接线** | 空噪声继续听；低风险 ASR 不确定退回 base；风险/含糊请求仍拦截 | `py_backend/server.py` overlay |
+| **重复 ASR 修复** | voiced-frame watermark，沉默时不重复处理旧窗口 | `py_backend/server.py` overlay |
+| **客户端即时打断** | 本地先停播放器，下一块 one-shot `force_listen` 追平服务器状态 | `realtime-session.js` overlay |
+| **listen reason 协议** | 区分 `turn_end / model_listen / force_listen`，不再自我截尾 | backend + frontend overlay |
+| **统一护栏音色** | clarify/stop 与正常对话统一为女声 | `outputs/duplex_session/*.wav` |
+| **推理优化** | LoRA 后编译；默认只编译 TTS；localhost 700ms 抗抖缓冲 | backend + frontend overlay |
+| **完整发布物** | 学习 HTML、集成 overlay、模型卡、发布清单、测试与 F 盘全量源码备份 | `docs/` + `release/v2.0/` |
+
+详细变更见 [RELEASE_NOTES_v2.0.md](RELEASE_NOTES_v2.0.md)，工程与算法从头讲解见
+[TFD-STAR 2.0 深度学习手册](docs/TFD_STAR_2.0_全双工可信语音智能体_深度学习手册.html)。
+
+## 实测结果
+
+### 2.0 在线链路
+
+| 指标 | 实测 | 说明 |
+|---|---:|---|
+| TTS compile warm-up | 132.6 s（一次性） | adapter 加载后，默认只编译 TTS graph |
+| backend latency | median **0.742 s**, mean **0.794 s** | 最新短探针，单会话 |
+| client wall time | median **0.824 s**, mean **0.897 s** | SSH 直连入口 |
+| Python integration tests | **10 passed** | adapter / MLP / ASR / Gate runtime |
+| browser protocol tests | **10 passed** | 品牌、打断、compile keepalive 契约 |
+
+> 公网 Gradio 中继曾把约 0.7 秒模型生成放大为 2.3~4.2 秒。SSH 直连恢复到
+> 1 秒内，说明当时主要瓶颈是传输与缓冲，不是 32GB 4080 的显存容量。
+
+### 研究与训练层
+
+| 能力 | 结果 | 证据边界 |
+|---|---:|---|
+| Turn MLP 帧分类 | val accuracy **96.46%** | 参数化合成数据 hold-out |
+| Turn MLP 事件评测 | 假开口 **0%**、漏接 **0%**、take median 553.9ms | 150 条合成话语，四帧确认 |
+| barge-in 机制 | 100/200/500ms chunk 总延迟 300/400/566.7ms | 本地机制评测 |
+| Qwen2.5-1.5B GRPO | context recall 0.301→**0.484** | 20 steps，真实 LoRA 梯度 |
+| MiniCPM-o 9B GRPO | 最佳 reward **+0.015**；多数组合退化 | 小增益接近约 ±0.08 采样噪声 |
+| 真基座打断 A/B | probe bigram 0.000→**0.089** | 揭示截断时机、近因偏置与模态 gap |
+
+我们保留 9B 的全部负结果，因为“强基座 + 小数据 + 小 group”并不保证 RL 会提升。
+详细报告在 [MANIFEST.md](MANIFEST.md) 和
+[V2_ARCHITECTURE_AND_RESULTS.md](docs/V2_ARCHITECTURE_AND_RESULTS.md)。
+
+## 核心算法
+
+### Turn-taking MLP
+
+每 100ms 提取能量、连续停顿、能量斜率、1/3s 语音占比、累计语音、内部停顿、
+停顿前语音长度、最后 voiced 能量和尾部下降量等 10 维因果特征：
+
+```text
+x[10] → Linear(10,32) → ReLU → Linear(32,3)
+                                 hold / take / backchannel
+```
+
+训练使用带类别权重的交叉熵；部署端连续四帧预测 take 才真正开口，用延迟换低抢话率。
+
+### TrustGate
+
+```text
+score = risk × (1 - confidence)
+```
+
+但决策不是只看 score：语义含糊单独追问；低置信+风险直接停止；风险 ≥0.4 至少确认，
+风险 ≥0.8 停止。ASR 只是安全监视器，低风险不确定会让原始音频回到 MiniCPM-o，
+避免“任何动静都 clarify”。
+
+### GRPO + LoRA
+
+同一 prompt 采样一组候选，按 reward 做组内 z-score：
+
+```text
+A_i = (r_i - mean(r)) / (std(r) + eps)
+L = -mean(A_i · log πθ(y_i|x)) + β · mean(logπθ - logπref)
+```
+
+- 安全族 reward：BLEU-1 内容一致性 + `execute/clarify/stop` 动作一致性；
+- barge-in 族 reward：字符 bigram Jaccard 上下文回忆 + BLEU-1；
+- LoRA：`r=16, alpha=32, dropout=0.05, target=all-linear`；
+- LoRA reference：`disable_adapter()` 获得冻结基座，无需再复制一份 9B 模型。
 
 ## 快速开始
 
-### 本机（无 GPU）—— 13 项离线交付全部可跑
+### CPU：验证算法与证据
 
 ```bash
-pip install -r requirements_minicpmo.txt   # 或最小依赖：numpy pyyaml soundfile pytest
-python scripts/20_run_gate_demo.py --offline    # 护栏三态 demo
-python scripts/30_duplex_session.py --offline   # 端到端接线冒烟
-python scripts/33_prep_bargein_rl_data.py       # barge-in RL 数据生成
-python scripts/60_turntaking_train.py           # turn-taking 决策器训练（CPU 即可）
-python scripts/61_turntaking_eval.py            # 策略对比 + confirm_frames Pareto
-python scripts/62_bargein_eval.py               # barge-in 延迟分解
-python scripts/63_duplex_bargein.py --offline   # barge-in 接线验证
-python scripts/64_gate_incremental.py           # 护栏增量决策评测
-python -m pytest tests/ -q                      # 45 项单元测试
+git clone https://github.com/Jatshi/trusted-full-duplex-agent.git
+cd trusted-full-duplex-agent
+pip install -r requirements_minicpmo.txt
+
+python scripts/60_turntaking_train.py
+python scripts/61_turntaking_eval.py
+python scripts/64_gate_incremental.py
+python -m pytest tests -q
 ```
 
-### GPU 真机（AutoDL / 24GB+ 显存）
+### GPU：训练 GRPO adapter
 
 ```bash
-bash scripts/run_autodl.sh setup        # 官方锁定依赖 + 权重下载（HF 镜像）
-bash scripts/run_autodl.sh online       # 真基座端到端会话 + 演示录制
-# 真基座 barge-in 与 A/B 归因：
-python scripts/63_duplex_bargein.py
-python scripts/63_duplex_bargein.py --bargein-delay-ms 4500
-# barge-in 上下文 GRPO 训练闭环：
-python scripts/32_run_grpo.py --real --model <模型路径> \
-  --data data/rl_streams/bargein_context.jsonl --lr 1e-5 --group-size 4
+bash scripts/run_autodl.sh setup
+
+python scripts/32_run_grpo.py --real \
+  --model /path/to/MiniCPM-o-4_5 \
+  --data data/rl_streams/bargein_context.jsonl \
+  --lr 1e-5 --group-size 4
 ```
 
-## 关键实验与诚实边界
+### GPU：运行完整 2.0 Demo
 
-**A/B 归因（Turn3 细节丢失根因，均有实测支撑）**
-- 截断时机：打断越早，可回忆素材越少（500ms 打断时功能列表尚未播出，bigram 0.0）；
-- 近因偏置 + 幻觉：延迟打断后模型准确回忆被打断前**最后一句**，未播出内容从先验编造（bigram 0.089）；
-- 模态 gap：text-context 回忆（9B≈0.69）远强于 audio-token 自我回忆（0.089）——
-  这是 `duplex_server` set_break 协议（打断事件入模 + 完整音频上下文）的直接架构动机。
+主仓库只发布可审查的差异补丁与本项目新增文件，不复制整个上游 Demo：
 
-**RL 训练闭环（含负结果的诚实记录）**
-- 1.5B 弱基座学习信号明确（context_recall 相对提升 61%）——「发现弱点→构造数据→
-  同口径 reward→GRPO 闭环改善」全链路成立；
-- 9B 强基座 text-context 回忆已近天花板（0.52~0.69），轻量 GRPO 两个配置均为负
-  delta 且步数越多退化越重；同一基座两次 pre 评测相差 0.166，标定单次评测噪声
-  约 ±0.08——负结果与噪声带分析比正数字更有信息量。
+```bash
+git clone https://github.com/OpenBMB/MiniCPM-o-Demo.git MiniCPM-o-Demo
+python integrations/minicpmo45-demo/apply_integration.py MiniCPM-o-Demo
 
-**定位说明**
-- 本项目是**系统层全双工**（可打断/可回溯/实时决策在系统层），基座在模型层为半双工
-  使用（streaming_prefill 听 → streaming_generate 说）；原生全双工模型（Moshi 类
-  simultaneous listening & speaking）与本项目是同一问题的两条路线，本项目给出了
-  「半双工基座 + 系统层全双工」在可控性/可评测性/可插护栏上的实测依据。
-- 基座用开源（MiniCPM-o 4.5），自研贡献在护栏/turn-taking/barge-in/评测/RL 对齐层，
-  如实标注。
-
-## RL Checkpoints
-
-barge-in 上下文 GRPO 的 LoRA 权重（Qwen2.5-1.5B 与 MiniCPM-o 9B 各配置）与
-poc_result.json 见 HuggingFace：
-
-- Model：https://huggingface.co/jatshi/trusted-full-duplex-agent
-- Dataset（训练数据+用户语音+实证音频）：https://huggingface.co/datasets/jatshi/trusted-full-duplex-agent-data
-
-或按上方命令复现训练。
-
-## 目录结构
-
-```
-configs/        base/gate/rl/eval/turntaking 五份 YAML（改配置不改代码切基座/调阈值）
-src/tfd/        base 基座 · gate 护栏 · turntaking 决策 · rl 强化 · eval 指标
-scripts/        bootstrap + 00~64 流程脚本（含 AutoDL 部署 run_autodl.sh）
-tests/          45 项 pytest（无 GPU 可跑）
-data/           RL 样本 jsonl、user_turns 用户语音 wav、turntaking 训练数据
-weights/        模型权重（不入库）
-outputs/        评测报告/会话音频/RL checkpoint（JSON 报告入库，权重走 HF）
+cp integrations/minicpmo45-demo/tfd-runtime.env.example /secure/path/tfd.env
+# 修改模型、adapter、MLP、ASR 的绝对路径
+set -a; . /secure/path/tfd.env; set +a
 ```
 
-## 复现约定
+然后按匹配的 MiniCPM-o-Demo upstream revision 启动 backend、worker、gateway。
+集成细节与测试命令见
+[integrations/minicpmo45-demo/README.md](integrations/minicpmo45-demo/README.md)。
 
-- 所有配置集中在 `configs/*.yaml`；随机种子统一 seed=42（`configs/rl.yaml`）。
-- 训练/评测口径一致：barge-in context_recall 用 `tfd.eval.metrics.bigram_overlap`
-  （字符 bigram Jaccard），训练 reward 与 63 号探针评测共用同一实现。
-- 完整交付物清单与逐项复现入口见 **[MANIFEST.md](MANIFEST.md)**。
+## Hugging Face 资产
+
+- [模型仓库](https://huggingface.co/jatshi/trusted-full-duplex-agent)：GRPO LoRA、
+  turn-taking MLP、2.0 runtime config、结果与模型卡；
+- [数据与证据仓库](https://huggingface.co/datasets/jatshi/trusted-full-duplex-agent-data)：
+  GRPO JSONL、turn-taking frames、用户语音与端到端报告。
+
+基础 MiniCPM-o、Qwen 与 Faster-Whisper 权重不重复上传。请从各自官方仓库下载，并遵守其许可。
+
+## 仓库导航
+
+```text
+configs/                         base / gate / RL / turn-taking 配置
+src/tfd/
+  base/                          基座接口
+  gate/                          confidence / risk / ambiguity / TrustGate
+  turntaking/                    10维特征、MLP、barge-in
+  rl/                            reward 与可微 GRPO trainer
+  eval/                          全双工指标
+scripts/                         00~66 训练、评测、录制与部署入口
+integrations/minicpmo45-demo/    2.0 在线 Demo overlay 与环境变量模板
+data/                            可复现训练数据
+outputs/                         JSON/WAV 证据；大权重走 Hugging Face
+docs/                            深度学习 HTML、延迟诊断与架构说明
+release/v2.0/                    发布 manifest、hash 与验证报告
+```
+
+## 文档
+
+<p align="center">
+  <a href="docs/TFD_STAR_2.0_全双工可信语音智能体_深度学习手册.html">
+    <img src="docs/assets/learning-manual-preview.png" width="92%" alt="TFD-STAR 2.0 learning manual preview">
+  </a>
+</p>
+
+- [TFD-STAR 2.0 全双工可信语音智能体深度学习手册](docs/TFD_STAR_2.0_全双工可信语音智能体_深度学习手册.html)
+- [2.0 架构与证据摘要](docs/V2_ARCHITECTURE_AND_RESULTS.md)
+- [F 盘全量归档与远端快照说明](docs/F_DRIVE_ARCHIVE_MANIFEST_2.0.md)
+- [全双工 Demo 延迟与误打断诊断](docs/FULL_DUPLEX_LATENCY_PROFILE_20260918.md)
+- [完整产物与复现清单](MANIFEST.md)
+- [2.0 发布说明](RELEASE_NOTES_v2.0.md)
+
+## 诚实边界
+
+- Turn MLP 的强指标来自合成声学，尚需真人双人对话域外验证。
+- 9B GRPO 的最佳正增益很小，且多数 sweep 退化；它是完整训练/部署闭环，
+  不是“RL 必然提升强基座”的证据。
+- WebSocket Float32 PCM、单会话与 SSH tunnel 是研究部署；生产化还需要
+  HTTPS/WSS、鉴权、并发、丢包、长稳和审计。
+- 基座模型能力属于 OpenBMB。本项目不会把上游能力包装成自研训练结果。
+
+## Citation
+
+```bibtex
+@software{shi2026tfdstar,
+  author  = {Jianting Shi},
+  title   = {TFD-STAR 2.0: Trusted Full-Duplex Speech Agent},
+  year    = {2026},
+  url     = {https://github.com/Jatshi/trusted-full-duplex-agent},
+  version = {2.0.0}
+}
+```
+
+## Acknowledgements
+
+Built on [OpenBMB MiniCPM-o 4.5](https://github.com/OpenBMB/MiniCPM-o) and the
+[MiniCPM-o-Demo](https://github.com/OpenBMB/MiniCPM-o-Demo) serving stack.
+Faster-Whisper is used only as an optional safety transcription dependency.
+Review upstream licenses before redistributing a combined deployment.

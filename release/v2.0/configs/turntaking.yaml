@@ -1,0 +1,33 @@
+# ============================================================
+# turn-taking 决策器配置 —— 方向A（外挂时机决策）+ 方向B（barge-in）
+# ============================================================
+
+frame_ms: 100                 # 决策帧粒度
+miss_latency_ms: 1000         # 用户说完超过该时长未接话 -> 漏接
+label_delay_s: 0.2            # 停顿进入该时长后才标注 take/backchannel
+
+data:
+  n_train: 500
+  n_val: 150
+  n_test: 150
+  seed: 42
+
+strategies:
+  rule_pause:
+    threshold_ms: 500         # 传统 VAD 方案典型值
+  base_aggressive:
+    threshold_ms: 300         # 模拟端到端基座内置时机策略（停顿短+内容可答即开口）
+  learned:
+    hidden: 32
+    lr: 0.01
+    epochs: 300
+    class_weights:            # take 类样本少但漏接代价高 -> 加权
+      hold: 1.0
+      take: 2.0
+      backchannel: 2.0
+
+bargein:
+  vad_threshold_db: -38.0
+  vad_sustain_frames: 3       # 连续 3 帧(300ms)过门限才判开口，防瞬时噪声
+  chunk_ms_list: [100, 200, 500]   # 评测的 TTS chunk 粒度
+  bargein_at_ms_list: [800, 1600, 2400]  # 用户在播报的哪个时刻插话

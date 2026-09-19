@@ -8,12 +8,15 @@ __pycache__/
 weights/
 outputs/**/*.safetensors
 outputs/**/*.bin
+release/**/*.safetensors
+release/**/*.bin
 *.log
 
 # 凭据与本地运维脚本（含 SSH 密码，严禁入库）
 scripts/ssh_*
 scripts/_*.py
 scripts/_*.txt
+scripts/_*.sh
 scripts/dl_local_poc_model.py
 scripts/tts_experiment.py
 scripts/diag_grpo_gen.py
@@ -28,3 +31,4 @@ hf_dataset_card.md
 nohup.out
 .DS_Store
 Thumbs.db
+demo/frpc_*

@@ -1,0 +1,36 @@
+# =============================================================================
+# Gradio demo 配置 —— Trusted Full-Duplex Speech Agent
+# 三个 Tab：
+#   1) 实证回放  —— 读 outputs/duplex_session 下的真实案例（无需 GPU）
+#   2) 实时决策  —— 现场麦克风 -> turn-taking / VAD 抢话 实时判定（无需 GPU）
+#   3) 真模型对话 —— 本地 MiniCPM-o 直连 或 远程 duplex_server(ws)
+#
+# 路径均为相对项目根目录（trusted-full-duplex-agent/）的路径。
+# =============================================================================
+project_root: "."            # 相对本文件 = 项目根
+
+evidence:
+  transcript_json: "outputs/duplex_session/session_transcript.json"
+  bargein_report: "outputs/duplex_session/bargein_report.json"
+  bargein_report_delayed: "outputs/duplex_session/bargein_report_delayed.json"
+  # 若远端产物已拉回 F:\tfd_remote_backup，可改这里指向备份目录（可为空）
+  backup_evidence_dir: ""    # 例如 "F:/tfd_remote_backup/outputs/duplex_session"
+
+tt:
+  strategy: "learned"        # learned | rule_pause | base_aggressive
+  learned_weights: "outputs/turntaking/learned_mlp.pt"
+  confirm_frames: 4
+  frame_ms: 100
+
+# ---- 真模型对话后端 ----
+backend:
+  mode: "auto"               # auto | local_ssr | remote_ws
+                             # auto: 优先 local_ssr(有 GPU/权重)，否则 remote_ws
+  # local_ssr —— 用你已有的 model.*/duplex.streaming_generate 配置
+  config: "configs/base.yaml"
+  # remote_ws —— 连 AutoDL 上已启动的官方 duplex_server（真·边听边说）
+  ws_url: "wss://127.0.0.1:8006/ws/duplex/{session_id}"
+  session_prefix: "adx_"
+  chunk_ms: 1000
+  system_prompt: "你是一个乐于助人的语音助手，请用简洁自然的中文口语回答用户。"
+  

@@ -1,0 +1,11 @@
+# Demo 专用依赖（本地 / AutoDL 通用）
+# 真模型对话层（local_ssr / remote_ws）另需项目本身的 torch / transformers / minicpmo-utils，
+# 见 requirements_minicpmo.txt。
+gradio>=5.0
+pyyaml
+numpy
+websocket-client      # duplex_server(remote_ws) 模式
+
+# 关键：gradio 等会把 huggingface-hub 顶到 1.x，但 transformers==4.51.0 要求 <1.0，
+# 且此冲突会让 MiniCPMOBackend 连 import 都失败。必须锁在 <1.0。
+huggingface-hub<1.0
