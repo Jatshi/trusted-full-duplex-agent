@@ -1,5 +1,21 @@
 # Changelog
 
+## [3.0.0] - 2026-10-09
+
+### Added
+
+- Response lifecycle ownership, bounded low-risk resume and cancellation tracing.
+- Four trained action-head observers and asynchronous EasyTurn / Smart Turn sidecar.
+- Six exclusive session-level SFT LoRA profiles with exact tensor verification.
+- Independent trained source/revocation memory protocol panel.
+- Causal Transformer policy research interface and reproducible data tools.
+- Pinned Demo delta installer, integrity manifest and source-only release guide.
+
+### Changed
+
+- Unified profile selection and model receipts, preserving the 2.0 reference path.
+- Expanded full-stack README, design documentation and external asset setup.
+
 ## [2.0.0] - 2026-09-19
 
 ### Added

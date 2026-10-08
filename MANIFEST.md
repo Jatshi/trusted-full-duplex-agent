@@ -1,5 +1,17 @@
 # MANIFEST — Trusted Full-Duplex Speech Agent
 
+## 3.0 源码发布（2026-10-09）
+
+- `src/tfd/duplex_policy/`：因果策略、动作模型、响应控制和组件接线。
+- `integrations/minicpmo45-demo-v3/`：固定上游补丁、20 个 overlay 文件、
+  校验安装器、语义侧车、记忆协议面板与资产配置工具。
+- `research/revocable_memory/`：训练记忆模型和研究入口。
+- `scripts/70_*` 至 `scripts/83_*`：策略训练、标注、特征提取和评测工具。
+- `docs/V3_DESIGN.md`、`docs/V3_ASSETS.md`、`RELEASE_NOTES_v3.0.md`。
+
+3.0 新增文件为源码、测试与设计文档，不含私人录音、凭据或新训练权重。
+历史 2.0 材料与原有公共资产保留。
+
 ## 2.0 发布补充（2026-09-19）
 
 2.0 将此前分离的研究组件接入真实 MiniCPM-o-Demo 服务。新增产物：

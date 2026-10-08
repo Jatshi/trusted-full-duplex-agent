@@ -201,6 +201,7 @@ class GRPOTrainer:
         self._peft_ref = ref_model is None and hasattr(trainable_model, "disable_adapter")
         g = rl_cfg.get("rl", {})
         self.group_size = int(g.get("group_size", 8))
+        self.temperature = float(g.get("temperature", 1.0))
         self.lr = float(rl_cfg.get("training", {}).get("lr", 5e-5))
         import torch
         # 只优化 requires_grad 的参数（LoRA 下即 LoRA 参数，冻结基座不进优化器）
@@ -216,6 +217,7 @@ class GRPOTrainer:
             out = self.trainable_model.generate(
                 input_ids=prompt_ids,
                 do_sample=True,
+                temperature=self.temperature,
                 top_p=0.9,
                 max_new_tokens=80,
                 num_return_sequences=self.group_size,
@@ -255,6 +257,8 @@ class GRPOTrainer:
             "reward_max": max(rewards),
             "reward_spread": max(rewards) - min(rewards),
             "nonzero_adv": sum(1 for a in advs if abs(a) > 1e-8),
+            "rewards": rewards,
+            "behavior_mixed": any(t.strip() for t in texts) and any(not t.strip() for t in texts),
             "actions": [_action_from_text(t) for t in texts],
         }
 

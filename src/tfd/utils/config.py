@@ -20,8 +20,8 @@ def _project_root() -> Path:
 
 
 def load_config(name: str) -> dict:
-    """按名字加载 base/gate/rl/eval/turntaking 配置。"""
-    allow = {"base", "gate", "rl", "eval", "turntaking"}
+    """按名字加载项目配置组。"""
+    allow = {"base", "gate", "rl", "eval", "turntaking", "duplex_policy"}
     if name not in allow:
         raise KeyError(f"unknown config group: {name}, allowed={allow}")
     cfg_path = _project_root() / "configs" / f"{name}.yaml"
