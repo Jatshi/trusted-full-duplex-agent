@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1440" height="460" viewBox="0 0 1440 460" role="img" aria-labelledby="title desc">
-  <title id="title">TFD-STAR 2.0</title><desc id="desc">Trusted full-duplex speech agent architecture banner</desc>
+  <title id="title">TFD-STAR 3.0</title><desc id="desc">Trusted full-duplex speech agent architecture banner</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#102a30"/><stop offset="1" stop-color="#061013"/></linearGradient>
     <linearGradient id="wave" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#61e6db"/><stop offset="1" stop-color="#c5f36b"/></linearGradient>
@@ -9,7 +9,7 @@
   <rect width="1440" height="460" rx="28" fill="url(#bg)"/><rect width="1440" height="460" rx="28" fill="url(#grid)"/>
   <circle cx="1250" cy="55" r="260" fill="none" stroke="#61e6db" opacity=".11"/><circle cx="1250" cy="55" r="195" fill="none" stroke="#61e6db" opacity=".13"/>
   <text x="76" y="84" fill="#61e6db" font-family="Cascadia Mono,monospace" font-size="18" font-weight="700" letter-spacing="5">TRUSTED FULL-DUPLEX SPEECH AGENT</text>
-  <text x="72" y="192" fill="#f0fafa" font-family="Bahnschrift,Microsoft YaHei,sans-serif" font-size="92" font-weight="800" letter-spacing="-3">TFD-STAR <tspan fill="#61e6db">2.0</tspan></text>
+  <text x="72" y="192" fill="#f0fafa" font-family="Bahnschrift,Microsoft YaHei,sans-serif" font-size="92" font-weight="800" letter-spacing="-3">TFD-STAR <tspan fill="#61e6db">3.0</tspan></text>
   <text x="76" y="250" fill="#b8ced1" font-family="Microsoft YaHei,sans-serif" font-size="26">会打断，会追问，会拒绝，也知道什么时候安静地继续听</text>
   <g transform="translate(76 302)" font-family="Cascadia Mono,monospace" font-size="14" font-weight="700">
     <rect width="174" height="44" rx="22" fill="#0b1a1e" stroke="#31535a"/><text x="21" y="28" fill="#dff6f4">TURN-TAKING MLP</text>

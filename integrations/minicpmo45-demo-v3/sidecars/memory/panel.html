@@ -1,0 +1,21 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>3.0已训练记忆机制实验</title>
+<style>body{font:15px system-ui;background:#101724;color:#e4ebf4;margin:16px}button,select{font:inherit;margin:5px;padding:7px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #455066;padding:6px;text-align:left}small{color:#bdc9db}pre{white-space:pre-wrap}</style>
+<h2>3.0 已训练记忆实验 · E136/E137 全18权重</h2>
+<p>这是<strong>显式文本／来源／撤销协议面板</strong>，不是麦克风记忆，也不控制主回答。只用原训练表达及其同源MiniCPM缓存向量，未运行独立测试。所有seed与GRU／不清槽对照均显示；已有负向结果，不宣称创新有效。清槽不等于删除主模型KV或遗忘。</p>
+<label>来源<select id="source"><option value="0">0</option><option value="1">1</option></select></label>
+<label>代号<select id="value"><option>红色</option><option>蓝色</option><option>绿色</option><option>黄色</option><option>紫色</option><option>白色</option><option>黑色</option><option>橙色</option></select></label>
+<label>训练表达<select id="template"><option value="0">A</option><option value="1">B</option></select></label>
+<button id="set">添加／改口</button><button id="revoke">撤销此来源</button><button id="query">查询并运行18模型</button><button id="reset">新作用域（清空）</button>
+<small>撤销持续有效；重新授权需开新作用域。查询不写入事件历史，不带真实/未来答案。</small>
+<pre id="events">尚无事件</pre><p id="status">加载中</p><table><thead><tr><th>权重／seed</th><th>预测代号</th><th>预测动作</th></tr></thead><tbody id="results"></tbody></table>
+<script>
+let controls=[];
+const el=id=>document.getElementById(id);
+const observed=op=>({op,source:Number(el('source').value),template:Number(el('template').value)});
+const display=()=>{el('events').textContent=JSON.stringify(controls,null,2);};
+el('set').onclick=()=>{if(controls.length>=63)return;controls.push({...observed('set'),value:el('value').selectedIndex});display();};
+el('revoke').onclick=()=>{if(controls.length>=63)return;controls.push(observed('revoke'));display();};
+el('reset').onclick=()=>{controls=[];display();el('results').replaceChildren();el('status').textContent='新作用域，未保留历史';};
+el('query').onclick=async()=>{el('query').disabled=true;try{const r=await fetch('/predict',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({controls:[...controls,observed('query')]})});const d=await r.json();if(!r.ok)throw Error(d.error);el('status').textContent=`实际CPU推理：${d.health.checkpoints}权重；${d.health.feature_dim}维同源缓存；不控制麦克风回答`;el('results').replaceChildren();for(const [name,v] of [['规则对照',d.rule],...Object.entries(d.predictions)]){const tr=document.createElement('tr');for(const text of [name,v.value,v.action]){const td=document.createElement('td');td.textContent=text;tr.append(td);}el('results').append(tr);}}catch(e){el('status').textContent='失败：'+e.message;}finally{el('query').disabled=false;}};
+fetch('/health').then(r=>r.json()).then(d=>{el('status').textContent=d.ready?`${d.checkpoints}个真实checkpoint已加载；日志仅本地保存，不训练`:'未就绪';}).catch(e=>{el('status').textContent='服务不可达：'+e.message;});
+</script></html>

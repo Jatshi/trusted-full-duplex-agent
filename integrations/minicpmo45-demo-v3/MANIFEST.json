@@ -1,0 +1,109 @@
+{
+  "version": "3.0.0",
+  "upstream_revision": "47709a9210dfd71afa76c058e017fc8c4db5c8d2",
+  "patch_sha256": "b047f1699139655717b1039d863c4378f004910ee765de7cc81d9de878b06ab9",
+  "overlay": [
+    {
+      "path": "py_backend/tfd_native_action.py",
+      "bytes": 828,
+      "sha256": "99bf4c78497cbd59f5ba99ca8e2217aa6e835919af21ed5f10733e01d34a47bb"
+    },
+    {
+      "path": "py_backend/tfd_response_context.py",
+      "bytes": 2494,
+      "sha256": "e1a6a09fce835a25dfa716727835d814737108daf76750b7216a8665975cc2a0"
+    },
+    {
+      "path": "py_backend/tfd_response_lifecycle.py",
+      "bytes": 1012,
+      "sha256": "86fbbc801cce55534796540320db92a7b7745fe85654f861613b650a8ed85948"
+    },
+    {
+      "path": "py_backend/tfd_runtime.py",
+      "bytes": 17775,
+      "sha256": "0b9a3e2a1935d121dee2ce2ae049fdac66b9f22129e5872da09cf09c51484282"
+    },
+    {
+      "path": "py_backend/tfd_wait_gate.py",
+      "bytes": 11381,
+      "sha256": "1e3ae32389cecc10bdd8860bbc32fa969770d88018731e3d90c0279bed19c76a"
+    },
+    {
+      "path": "static/duplex/lib/audible-stop-measurement.js",
+      "bytes": 8375,
+      "sha256": "6916e4f18780364bfd71247c984f1419f7c91dba9ba396de0ee88ae1e52d3609"
+    },
+    {
+      "path": "tests/browser/audio-clock-ready.js",
+      "bytes": 1756,
+      "sha256": "7716dbaa7ddac26e3f8aa28d44eefc6cf3c68520c9ed07fcbf6e96dfac437e61"
+    },
+    {
+      "path": "tests/js/audible-stop-measurement.test.js",
+      "bytes": 6899,
+      "sha256": "d3d5bc91c06f7eeccdeeb2e35e35e1c624cf76f3cbc98ac3d7c9847d258f8fc8"
+    },
+    {
+      "path": "tests/js/audible-stop-wiring-contract.test.js",
+      "bytes": 2896,
+      "sha256": "d0322f25e1536952502464aa7d68d05256c3c3ee93e59b09947e68f7d7509407"
+    },
+    {
+      "path": "tests/js/audio-clock-ready.test.js",
+      "bytes": 2024,
+      "sha256": "aad6f585f7ba8beb807bd12c292f7de5f88c7893de07daa70fe8be382c6d69df"
+    },
+    {
+      "path": "tests/js/audio-duplex-branding-contract.test.js",
+      "bytes": 1652,
+      "sha256": "4812024cec6065ca56d9a7f035abbc398ba4ef12ed435dd71cd19b239e86c4ee"
+    },
+    {
+      "path": "tests/js/audio-player-tail.test.js",
+      "bytes": 9324,
+      "sha256": "c08e01611b2a5eff59dfac887e822cbf66bd3d978954d0401a3dad25e1f1e4be"
+    },
+    {
+      "path": "tests/js/backend-compile-keepalive-contract.test.js",
+      "bytes": 1192,
+      "sha256": "5d16e5a44d53d356171388cc7976dcefce8bc51d420dbd66c25286419cf46abd"
+    },
+    {
+      "path": "tests/js/cfdc-timeline-e2e.test.js",
+      "bytes": 11901,
+      "sha256": "ca13971f910c15df928fda81c7a876e35f2a28d06e88a2f9d3817dd0ef2df971"
+    },
+    {
+      "path": "tests/js/realtime-bargein-contract.test.js",
+      "bytes": 1736,
+      "sha256": "c1c213620801f2c9b5d44562fca1c878c7a5b7f53663592b3603b6e9ed6ad520"
+    },
+    {
+      "path": "tests/js/realtime-cancel-timeline.test.js",
+      "bytes": 4965,
+      "sha256": "b6c4007e0377364b85587b99eda7c0db85432256f498867a34a352fb5952698e"
+    },
+    {
+      "path": "tests/test_e61_lifecycle_transport.py",
+      "bytes": 2438,
+      "sha256": "7f758667b32c87254f5b5b728304de09524b65d5d9adac1891df8287b4041ea9"
+    },
+    {
+      "path": "tests/test_tfd_native_action.py",
+      "bytes": 1901,
+      "sha256": "8f2a75c6155da21c94ec84788fbf139f7ceb31833e4c03f6b82201521583d8eb"
+    },
+    {
+      "path": "tests/test_tfd_response_context.py",
+      "bytes": 4312,
+      "sha256": "0a060fb3efba6ab2fbb7ff4774a46f339ef8beb23f2eb3d8ebe2c6b8d2e3ae2a"
+    },
+    {
+      "path": "tests/test_tfd_runtime.py",
+      "bytes": 8753,
+      "sha256": "548172791d36d214e3f2c27883d106645d0bf94a3318ae9a69fdfa38994749ad"
+    }
+  ],
+  "weights_included": false,
+  "private_recordings_included": false
+}

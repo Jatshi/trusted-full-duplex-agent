@@ -1,0 +1,54 @@
+version: "3.0"
+
+clock:
+  frame_ms: 160
+  max_frames: 512
+
+features:
+  # Local smoke dimensions. The AutoDL extraction probe will replace these
+  # with the selected SSL/backbone projections and write the resolved schema.
+  acoustic_dim: 8
+  semantic_dim: 12
+
+model:
+  model_dim: 128
+  num_heads: 4
+  num_layers: 4
+  ff_multiplier: 4
+  num_actions: 7
+  num_risk_levels: 3
+  dropout: 0.1
+
+training:
+  seed: 42
+  batch_size: 16
+  epochs: 20
+  lr: 0.0003
+  weight_decay: 0.01
+  grad_clip: 1.0
+  num_workers: 0
+  loss_weights:
+    action: 1.0
+    take_hazard: 0.7
+    yield_hazard: 0.5
+    risk: 0.8
+    prefix_consistency: 0.05
+
+calibration:
+  alpha: 0.10
+  ece_bins: 15
+  # Future real-data work should calibrate separately by scenario/risk group.
+  method: split_conformal_threshold
+
+safety:
+  high_risk: 0.70
+  ood_threshold: 0.80
+
+evaluation:
+  hazard_threshold: 0.50
+  event_tolerance_ms: 320
+
+paths:
+  smoke_data: data/safeduplex_cn/interim/synthetic_smoke.jsonl
+  split_manifest: data/safeduplex_cn/processed/splits.json
+  output_dir: outputs/duplex_policy_v3
